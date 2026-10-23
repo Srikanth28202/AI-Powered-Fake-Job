@@ -16,6 +16,7 @@ from app.core.security import decode_token
 from app.core.errors import AuthenticationError, ForbiddenError
 from app.schemas.user import UserResponse
 from app.services.auth_service import AuthService
+from app.services.job_service import JobService
 
 # Use HTTPBearer for flexible Swagger UI authorization and header parsing
 security_bearer = HTTPBearer(auto_error=False)
@@ -29,6 +30,11 @@ async def get_db() -> AsyncIOMotorDatabase:
 async def get_auth_service(db: AsyncIOMotorDatabase = Depends(get_db)) -> AuthService:
     """FastAPI dependency: returns initialized AuthService."""
     return AuthService(db)
+
+
+async def get_job_service(db: AsyncIOMotorDatabase = Depends(get_db)) -> JobService:
+    """FastAPI dependency: returns initialized JobService."""
+    return JobService(db)
 
 
 async def get_current_user(

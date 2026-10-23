@@ -10,6 +10,16 @@ from app.schemas.health import (
     DatabaseHealthResponse,
     SystemHealthResponse,
 )
+from app.schemas.job import (
+    JobAnalysisRequest,
+    JobAnalysisResponse,
+    JobAnalysisSummary,
+    JobAnalysisHistoryResponse,
+    MLPredictionDetails,
+    FeatureAttribution,
+    RuleWarningIndicator,
+    VerificationRecommendation,
+)
 
 __all__ = [
     "UserRegisterRequest",
@@ -19,4 +29,12 @@ __all__ = [
     "LogoutResponse",
     "DatabaseHealthResponse",
     "SystemHealthResponse",
+    "JobAnalysisRequest",
+    "JobAnalysisResponse",
+    "JobAnalysisSummary",
+    "JobAnalysisHistoryResponse",
+    "MLPredictionDetails",
+    "FeatureAttribution",
+    "RuleWarningIndicator",
+    "VerificationRecommendation",
 ]

@@ -70,6 +70,7 @@ def create_app() -> FastAPI:
 
     # ── API Routers ───────────────────────────────────────────
     app.include_router(api_v1_router, prefix="/api/v1")
+    app.include_router(api_v1_router, prefix="/api")
 
     # ── Root Health Checks ────────────────────────────────────
     @app.get("/health", tags=["Health"], summary="Root Liveness Probe")
