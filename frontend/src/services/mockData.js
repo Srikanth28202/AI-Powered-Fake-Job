@@ -45,6 +45,9 @@ export const MOCK_JOB_PRESETS = [
     salary_range: '$210,000 - $265,000 / yr',
     contact_email: 'recruiting-engineering@stripe.com',
     company_url: 'https://stripe.com/jobs',
+    category: 'Real / Legitimate',
+    verdict: 'LEGITIMATE (0/100 Risk)',
+    why_explanation: 'Legitimate corporate domain (@stripe.com), transparent role scope, realistic market compensation, zero upfront fee demands, standard multi-round technical interview process.',
     description: `Stripe is looking for a Staff Software Engineer to help design and implement our next-generation cloud infrastructure. You will partner with security, reliability, and payments teams to scale global distributed transaction engines with five-nines availability.
 
 Responsibilities:
@@ -61,52 +64,86 @@ Responsibilities:
 - $1,500 annual home office budget and 25 days paid time off.`,
   },
   {
-    id: 'suspicious-sample',
-    title: 'Urgent Remote Data Entry Clerk & Billing Assistant',
+    id: 'fake-check-scam',
+    title: 'Administrative Data Entry Assistant & Invoice Processor',
     company_name: 'Apex Global Logistics LLC',
     location: 'Remote (US & Canada)',
-    department: 'Administrative Services',
-    salary_range: '$48 - $58 / hour (Part-time / Flexible)',
+    department: 'Administrative Operations',
+    salary_range: '$45 - $55 / hr (Part-Time / Flexible)',
     contact_email: 'apex_recruitment_coordinator@gmail.com',
     company_url: 'http://apex-logistics-freecareers.com',
+    category: 'Fake (Upfront Fee / Fake Check)',
+    verdict: 'FRAUDULENT (94/100 Risk)',
+    why_explanation: 'Classic Fake Check Overpayment Scam: Unrealistic hourly wage ($50/hr for zero experience), uses free webmail (@gmail.com) instead of corporate email, and requires the victim to deposit an advance check and wire funds to an "approved software vendor".',
     description: `We are urgently seeking immediate Data Entry Operators to work remotely from home! No previous administrative experience required. Flexible working hours that fit your schedule.
 
 You will be responsible for entering client shipping manifests and inventory numbers into our proprietary portal. 
 
-IMPORTANT: We will issue a cashier's check to cover your home office equipment and required software package directly through our approved vendor upon completion of your preliminary questionnaire.`,
+IMPORTANT SETUP PROCESS: A pre-approved company cashier's check of $3,500 will be mailed to your address upon onboarding. You must deposit this check into your personal account and wire funds to our certified office hardware supplier to purchase your encrypted workstation package.`,
     requirements: `Requirements:
 - Must have basic computer knowledge and typing speed of at least 35 WPM.
 - Must be 18+ years old with reliable internet access.
-- Must hold an active checking account to process equipment reimbursement checks.`,
+- Must hold an active personal checking account to process the initial equipment check deposit.`,
     benefits: `Benefits:
 - Fast weekly direct deposits.
 - Work any 3-4 hours per day at your leisure.
-- $500 sign-on bonus upon successful setup.`,
+- $500 sign-on bonus upon successful software setup.`,
   },
   {
-    id: 'phishing-scam',
-    title: 'Global Crypto Payment Manager & Financial Task Specialist',
-    company_name: 'Binance Wealth Asset Trust',
-    location: 'Work From Home (Worldwide)',
+    id: 'fake-crypto-mule',
+    title: 'Financial Payment Task Specialist & Settlement Agent',
+    company_name: 'Binance Global Clearing Trust',
+    location: 'Remote (Worldwide)',
     department: 'Treasury & Client Settlements',
-    salary_range: '$8,500 - $14,000 / month + commission',
+    salary_range: '$8,500 - $14,000 / month + 5% commission',
     contact_email: 'binance_hr_direct@protonmail.com',
     company_url: 'http://binance-vip-verification-task.xyz',
-    description: `URGENT VACANCY: Earn high daily income working 1-2 hours per day! We are an authorized financial clearing agent.
+    category: 'Fake (Money Mule / Identity Theft)',
+    verdict: 'FRAUDULENT (98/100 Risk)',
+    why_explanation: 'Money Laundering & Mule Scam: Company impersonation, off-platform interview via Telegram, demanding personal bank/crypto account to transfer third-party money with a commission, and phishing for government ID selfies.',
+    description: `URGENT VACANCY: Earn high daily income working 1-2 hours per day! We are an authorized international payment processing partner.
 
-Your primary duty is to receive client funds, convert them to USDT or Bitcoin via nearest ATM or peer-to-peer exchange, and forward them to designated corporate wallets with 5% immediate commission.
+Your primary duty is to receive client funds into your personal account, convert them into cryptocurrency (USDT or Bitcoin) via nearest crypto ATM or P2P exchange, and forward the funds to our corporate wallet while keeping a 5% commission.
 
-INTERVIEW PROCESS: No formal interviews. All hiring is conducted instantly via Telegram. Message our Senior Recruitment Director on Telegram @HR_Director_FastHire to start today!`,
+INTERVIEW PROCESS: No formal resume or interview required. All communication is conducted via Telegram. Message our Senior Recruitment Officer on Telegram @HR_FastHire_Manager to start immediately.`,
     requirements: `Requirements:
-- Any individual over 18 with a personal crypto wallet or bank account.
+- Any individual over 18 with a personal crypto wallet or active bank account.
 - Must be able to respond to Telegram instructions within 15 minutes.
-- Submit a government photo ID and selfie holding ID for instant verification.`,
+- Must submit a photo of your passport/driver's license and selfie holding ID for instant identity verification.`,
     benefits: `Benefits:
 - Instant daily payouts directly in cryptocurrency.
 - No tax reporting required.
 - $1,000 bonus on your first 5 transactions.`,
   },
+  {
+    id: 'real-analyst',
+    title: 'Cybersecurity Threat Intelligence Analyst',
+    company_name: 'CrowdStrike Holdings Inc.',
+    location: 'Austin, TX / Remote',
+    department: 'Global Threat Research',
+    salary_range: '$115,000 - $145,000 / yr',
+    contact_email: 'careers@crowdstrike.com',
+    company_url: 'https://www.crowdstrike.com/careers',
+    category: 'Real / Legitimate',
+    verdict: 'LEGITIMATE (5/100 Risk)',
+    why_explanation: 'Authentic enterprise posting: Uses legitimate registered corporate domain (@crowdstrike.com), detailed technical competencies, standard salary benchmarks, and official career ATS portal.',
+    description: `CrowdStrike is looking for a Cybersecurity Threat Intelligence Analyst to monitor adversarial activity groups, conduct technical malware telemetry analysis, and author threat intelligence briefings for enterprise customers.
+
+Responsibilities:
+- Track nation-state and cybercrime threat actors across the MITRE ATT&CK framework.
+- Correlate IOCs and malicious campaign infrastructure across global endpoints.
+- Collaborate with threat hunting and reverse-engineering teams to publish actionable defense advisories.`,
+    requirements: `Requirements:
+- 3+ years experience in cyber threat intelligence, SOC operations, or malware analysis.
+- Working knowledge of STIX/TAXII standards, SIEM queries (Splunk/ELK), and Python scripting.
+- Industry certifications (GCTI, CISSP, CEH) preferred.`,
+    benefits: `Benefits:
+- Comprehensive medical, dental, and mental healthcare packages.
+- Competitive 401(k) matching and Employee Stock Purchase Plan (ESPP).
+- Flexible PTO and continuous education stipends.`,
+  },
 ]
+
 
 export const MOCK_HISTORICAL_JOBS = [
   {

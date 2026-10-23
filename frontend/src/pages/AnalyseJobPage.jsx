@@ -20,7 +20,9 @@ import {
   MapPin,
   Briefcase,
   Layers,
+  ArrowRight,
 } from 'lucide-react'
+
 import { Card } from '../components/common/Card'
 import { Button } from '../components/common/Button'
 import { RiskBadge } from '../components/common/Badge'
@@ -122,41 +124,68 @@ export default function AnalyseJobPage() {
         )}
       </div>
 
-      {/* Quick Demo Presets Bar */}
-      <Card noPadding className="p-4 bg-slate-900/40 border-slate-800">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2 text-xs font-semibold text-slate-300">
+      {/* Quick Demo Presets Bar with Dataset Ground-Truth Explanations */}
+      <Card noPadding className="p-5 bg-slate-900/60 border-slate-800 shadow-xl space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+          <div className="flex items-center gap-2">
             <Zap className="w-4 h-4 text-amber-400" />
-            <span>Quick Demo Presets:</span>
+            <span className="text-xs font-bold text-white uppercase tracking-wider">
+              EMSCAD Benchmark Dataset Samples:
+            </span>
           </div>
+          <span className="text-[11px] text-slate-400 font-mono">
+            Click any sample to load & examine why it is Fake or Real
+          </span>
+        </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              onClick={() => handlePresetClick('safe-sample')}
-              className="text-xs px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 transition-all font-medium flex items-center gap-1.5"
-            >
-              <ShieldCheck className="w-3.5 h-3.5" />
-              Real Stripe Staff Role (Safe)
-            </button>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+          {MOCK_JOB_PRESETS.map((preset) => {
+            const isFake = preset.id.startsWith('fake')
+            return (
+              <button
+                key={preset.id}
+                onClick={() => handlePresetClick(preset.id)}
+                className={`p-3 rounded-xl border text-left transition-all group flex flex-col justify-between ${
+                  isFake
+                    ? 'bg-rose-950/20 border-rose-500/30 hover:border-rose-500/60 hover:bg-rose-950/40'
+                    : 'bg-emerald-950/20 border-emerald-500/30 hover:border-emerald-500/60 hover:bg-emerald-950/40'
+                }`}
+              >
+                <div>
+                  <div className="flex items-center justify-between gap-1 mb-1.5">
+                    <span
+                      className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
+                        isFake ? 'bg-rose-500/20 text-rose-300' : 'bg-emerald-500/20 text-emerald-300'
+                      }`}
+                    >
+                      {preset.verdict}
+                    </span>
+                    <span className="text-[10px] text-slate-500 font-mono">EMSCAD</span>
+                  </div>
+                  <div className="text-xs font-semibold text-slate-200 group-hover:text-white line-clamp-1">
+                    {preset.title}
+                  </div>
+                  <div className="text-[11px] text-slate-400 mb-2">
+                    {preset.company_name}
+                  </div>
+                  <p className="text-[10px] text-slate-400 line-clamp-3 bg-slate-950/60 p-2 rounded-lg border border-slate-800/80 leading-relaxed font-sans">
+                    <strong className="text-slate-300">Why: </strong>
+                    {preset.why_explanation}
+                  </p>
+                </div>
 
-            <button
-              onClick={() => handlePresetClick('suspicious-sample')}
-              className="text-xs px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 transition-all font-medium flex items-center gap-1.5"
-            >
-              <AlertTriangle className="w-3.5 h-3.5" />
-              Apex Data Entry (Subtle Check Scam)
-            </button>
-
-            <button
-              onClick={() => handlePresetClick('phishing-scam')}
-              className="text-xs px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 transition-all font-medium flex items-center gap-1.5"
-            >
-              <ShieldAlert className="w-3.5 h-3.5" />
-              Crypto Wire Task (High Risk Fraud)
-            </button>
-          </div>
+                <div className="mt-3 pt-2 border-t border-slate-800/60 flex items-center justify-between text-[10px]">
+                  <span className="text-indigo-400 group-hover:underline font-semibold flex items-center gap-1">
+                    Load & Scan <ArrowRight className="w-3 h-3" />
+                  </span>
+                  <span className="text-slate-500">{preset.salary_range ? 'Salary Included' : ''}</span>
+                </div>
+              </button>
+            )
+          })}
         </div>
       </Card>
+
 
       {/* Scanning In-Progress Animation State */}
       {isAnalyzing && (
