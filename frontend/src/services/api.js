@@ -75,6 +75,15 @@ export const analyticsAPI = {
   getAdminOverview: (params) => api.get('/analytics/admin/overview', { params }),
 }
 
+export const adminAPI = {
+  getUsers: (params) => api.get('/admin/users', { params }),
+  updateUser: (userId, payload) => api.patch(`/admin/users/${userId}`, payload),
+  deleteUser: (userId) => api.delete(`/admin/users/${userId}`),
+  deleteJobAnalysis: (analysisId) => api.delete(`/admin/jobs/${analysisId}`),
+  getSuspiciousJobs: (params) => api.get('/admin/suspicious-jobs', { params }),
+  getAuditLogs: (params) => api.get('/admin/audit-logs', { params }),
+}
+
 export const healthAPI = {
   checkHealth: () => api.get('/health'),
   checkDbHealth: () => api.get('/health/db'),
@@ -82,3 +91,4 @@ export const healthAPI = {
 }
 
 export default api
+

@@ -43,6 +43,12 @@ async def get_analytics_service(db: AsyncIOMotorDatabase = Depends(get_db)) -> A
     return AnalyticsService(db)
 
 
+async def get_admin_service(db: AsyncIOMotorDatabase = Depends(get_db)):
+    """FastAPI dependency: returns initialized AdminService."""
+    from app.services.admin_service import AdminService
+    return AdminService(db)
+
+
 async def get_current_user(
     credentials: Optional[HTTPAuthorizationCredentials] = Depends(security_bearer),
     db: AsyncIOMotorDatabase = Depends(get_db),

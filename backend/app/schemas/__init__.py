@@ -27,6 +27,13 @@ from app.schemas.analytics import (
     MonthlyTrendPoint,
     AnalyticsOverviewResponse,
 )
+from app.schemas.admin import (
+    AdminUpdateUserRequest,
+    AdminUserListResponse,
+    AuditEventRecord,
+    AuditLogResponse,
+    AdminDeleteConfirmation,
+)
 
 __all__ = [
     "UserRegisterRequest",
@@ -49,4 +56,9 @@ __all__ = [
     "CategoryBreakdownItem",
     "MonthlyTrendPoint",
     "AnalyticsOverviewResponse",
+    "AdminUpdateUserRequest",
+    "AdminUserListResponse",
+    "AuditEventRecord",
+    "AuditLogResponse",
+    "AdminDeleteConfirmation",
 ]

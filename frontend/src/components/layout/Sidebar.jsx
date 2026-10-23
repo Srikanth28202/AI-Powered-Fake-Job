@@ -13,6 +13,7 @@ import {
   Sparkles,
   X,
   Cpu,
+  UserCog,
 } from 'lucide-react'
 import useAuthStore from '../../store/authStore'
 import { MOCK_KPIS } from '../../services/mockData'
@@ -22,8 +23,10 @@ const navigationItems = [
   { label: 'Analyse Job', to: '/analyse', icon: SearchCheck, badge: 'AI Scan' },
   { label: 'Analysis History', to: '/history', icon: History },
   { label: 'Risk Analytics', to: '/analytics', icon: BarChart3 },
+  { label: 'Admin Console', to: '/admin', icon: UserCog, adminOnly: true, badge: 'RBAC' },
   { label: 'My Profile', to: '/profile', icon: User },
 ]
+
 
 export default function Sidebar({ isOpen, onClose }) {
   const { user, logout } = useAuthStore()
@@ -81,34 +84,37 @@ export default function Sidebar({ isOpen, onClose }) {
             Platform Menu
           </div>
 
-          {navigationItems.map((item) => {
-            const Icon = item.icon
-            return (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                onClick={onClose}
-                className={({ isActive }) =>
-                  `flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all group ${
-                    isActive
-                      ? 'bg-gradient-to-r from-indigo-600/20 to-purple-600/10 text-white border border-indigo-500/30 shadow-sm shadow-indigo-500/10'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
-                  }`
-                }
-              >
-                <div className="flex items-center gap-3">
-                  <Icon className="w-4 h-4 transition-colors group-hover:text-indigo-400" />
-                  <span>{item.label}</span>
-                </div>
+          {navigationItems
+            .filter((item) => !item.adminOnly || user?.role === 'admin')
+            .map((item) => {
+              const Icon = item.icon
+              return (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  onClick={onClose}
+                  className={({ isActive }) =>
+                    `flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all group ${
+                      isActive
+                        ? 'bg-gradient-to-r from-indigo-600/20 to-purple-600/10 text-white border border-indigo-500/30 shadow-sm shadow-indigo-500/10'
+                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+                    }`
+                  }
+                >
+                  <div className="flex items-center gap-3">
+                    <Icon className="w-4 h-4 transition-colors group-hover:text-indigo-400" />
+                    <span>{item.label}</span>
+                  </div>
 
-                {item.badge && (
-                  <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded-md bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                    {item.badge}
-                  </span>
-                )}
-              </NavLink>
-            )
-          })}
+                  {item.badge && (
+                    <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded-md bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                      {item.badge}
+                    </span>
+                  )}
+                </NavLink>
+              )
+            })}
+
 
           {/* AI Engine Status Card */}
           <div className="pt-6 px-1">
