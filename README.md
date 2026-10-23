@@ -1,0 +1,132 @@
+# 🔍 AI-Powered Fake Job Detection and Job Risk Analytics System
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
+[![React](https://img.shields.io/badge/React-18+-61DAFB.svg)](https://reactjs.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688.svg)](https://fastapi.tiangolo.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248.svg)](https://www.mongodb.com/atlas)
+
+A full-stack, production-ready system that uses machine learning to detect fraudulent job postings and provide risk analytics for job seekers and recruiters.
+
+---
+
+## 📁 Project Structure
+
+```
+AI-Powered-Fake-Job/
+├── frontend/          # React + Vite + Tailwind CSS
+├── backend/           # Python FastAPI REST API
+├── ml/                # Scikit-learn ML pipeline & model artifacts
+├── .gitignore
+├── .env.example
+└── README.md
+```
+
+---
+
+## 🧩 Tech Stack
+
+| Layer      | Technology                          |
+|------------|-------------------------------------|
+| Frontend   | React 18, Vite, Tailwind CSS        |
+| Backend    | Python 3.11+, FastAPI, Uvicorn      |
+| Database   | MongoDB Atlas (via Motor async ODM) |
+| ML Engine  | Scikit-learn, Pandas, NumPy         |
+| Auth       | JWT (python-jose)                   |
+| Validation | Pydantic v2                         |
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Node.js >= 18
+- Python >= 3.11
+- MongoDB Atlas account
+- Git
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/Srikanth28202/AI-Powered-Fake-Job.git
+cd AI-Powered-Fake-Job
+```
+
+### 2. Configure Environment Variables
+
+```bash
+cp .env.example .env
+# Fill in your values in .env
+```
+
+### 3. Start the Backend
+
+```bash
+cd backend
+python -m venv venv
+venv\Scripts\activate        # Windows
+source venv/bin/activate     # macOS/Linux
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000
+```
+
+### 4. Train / Load ML Models
+
+```bash
+cd ml
+pip install -r requirements.txt
+python pipeline/train.py
+```
+
+### 5. Start the Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+The app will be available at `http://localhost:5173`.
+
+---
+
+## 📖 API Documentation
+
+Once the backend is running, visit:
+
+- **Swagger UI**: `http://localhost:8000/docs`
+- **ReDoc**: `http://localhost:8000/redoc`
+
+---
+
+## 🧪 Running Tests
+
+```bash
+# Backend
+cd backend && pytest
+
+# Frontend
+cd frontend && npm run test
+```
+
+---
+
+## 📦 Environment Variables
+
+See `.env.example` for all required variables.
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/your-feature`)
+3. Commit your changes
+4. Push to the branch and open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.

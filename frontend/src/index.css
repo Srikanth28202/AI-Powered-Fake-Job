@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-primary: 99 102 241;   /* indigo-500 */
+    --color-secondary: 168 85 247; /* purple-500 */
+    --color-accent: 34 211 238;    /* cyan-400   */
+    --color-danger: 239 68 68;     /* red-500    */
+    --color-success: 34 197 94;    /* green-500  */
+    --color-warning: 234 179 8;    /* yellow-500 */
+
+    --color-bg: 10 10 20;
+    --color-surface: 17 24 39;
+    --color-border: 31 41 55;
+    --color-text: 243 244 246;
+    --color-muted: 107 114 128;
+  }
+
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-[rgb(var(--color-bg))] text-[rgb(var(--color-text))] antialiased;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+}

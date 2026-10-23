@@ -1,0 +1,24 @@
+# ML pipeline dependencies
+# AI-Powered Fake Job Detection System — ML Module
+
+# ── Core ML ───────────────────────────────────────────────────
+scikit-learn==1.6.1
+numpy==2.2.1
+pandas==2.2.3
+scipy==1.15.0
+joblib==1.4.2
+
+# ── Feature Engineering ───────────────────────────────────────
+nltk==3.9.1
+imbalanced-learn==0.13.0    # SMOTE for class imbalance
+
+# ── Experiment Tracking ───────────────────────────────────────
+mlflow==2.19.0              # optional — comment out if not using tracking server
+
+# ── Visualisation ─────────────────────────────────────────────
+matplotlib==3.10.0
+seaborn==0.13.2
+
+# ── Dev / Testing ─────────────────────────────────────────────
+pytest==8.3.4
+python-dotenv==1.0.1

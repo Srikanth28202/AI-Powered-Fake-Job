@@ -1,0 +1,77 @@
+# ============================================================
+# Root-level .gitignore
+# AI-Powered Fake Job Detection System
+# ============================================================
+
+# --- Environment & Secrets ---
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.whl
+venv/
+.venv/
+env/
+ENV/
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pytest_cache/
+.coverage
+htmlcov/
+*.coveragerc
+.tox/
+.nox/
+*.log
+
+# --- Node / Frontend ---
+node_modules/
+dist/
+.cache/
+.parcel-cache/
+*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.eslintcache
+.stylelintcache
+
+# --- ML Artifacts ---
+ml/models/*.pkl
+ml/models/*.joblib
+ml/models/*.h5
+ml/data/raw/
+ml/data/processed/
+*.csv
+
+# --- IDEs ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# --- Docker ---
+.dockerignore
+
+# --- Misc ---
+*.bak
+*.tmp
