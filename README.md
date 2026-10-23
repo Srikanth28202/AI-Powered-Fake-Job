@@ -119,21 +119,47 @@ Once the backend is running, visit:
 
 ---
 
-## 🧪 Running Tests
+## 🧪 Running Automated Tests
+
+The repository maintains automated test suites across ML, Backend RBAC, Auth, Analytics, and API endpoints:
 
 ```bash
-# Backend
-cd backend && pytest
+# 1. Run all Backend API tests (34 tests: RBAC, Auth, Jobs, Analytics, Health)
+python -m pytest backend/tests/ -v
 
-# Frontend
-cd frontend && npm run test
+# 2. Run all ML & Data Pipeline tests (28 tests: Inference, Explainability, Preprocessing)
+python -m pytest ml/tests/ -v
+
+# 3. Build & Validate Frontend Production Bundle
+cd frontend
+npm run build
 ```
+
+---
+
+## 🔒 MongoDB Atlas Network Security Note
+
+If connecting to MongoDB Atlas (`mongodb+srv://...`):
+- Ensure your local public IP address is added to the **IP Access List** in the MongoDB Atlas dashboard (*Network Access -> Add IP Address*).
+- If your IP changes or if accessing behind strict firewalls/corporate proxies, an SSL/TLS `ServerSelectionTimeoutError` or `TLSV1_ALERT_INTERNAL_ERROR` will occur.
+- When MongoDB Atlas is unreachable, the FastAPI backend will run in decoupled mode (reporting degraded status on `/health/db` without crashing), and the test suite uses in-memory mock collections ensuring zero test flakiness.
 
 ---
 
 ## 📦 Environment Variables
 
-See `.env.example` for all required variables.
+See `.env.example` and `backend/.env.example` for all configurable variables:
+| Variable | Description | Default |
+|---|---|---|
+| `MONGODB_URI` | MongoDB Atlas or local connection string | `mongodb://localhost:27017` |
+| `MONGODB_DB_NAME` | Database name | `fake_job_detection` |
+| `JWT_SECRET_KEY` / `JWT_SECRET` | Secret key for signing JWT tokens | `dev-insecure-secret...` |
+| `JWT_ALGORITHM` | JWT signing algorithm | `HS256` |
+| `JWT_ACCESS_TOKEN_EXPIRE_MINUTES` | Access token lifespan in minutes | `30` (or `1440` in dev) |
+| `ALLOWED_ORIGINS` / `CORS_ORIGINS` | Permitted frontend origins | `http://localhost:5173` |
+| `ML_MODEL_PATH` | Path to trained Scikit-learn model | `../ml/models/fake_job_model.pkl` |
+| `VITE_API_BASE_URL` | Frontend REST API endpoint | `http://localhost:8000/api/v1` |
+
 
 ---
 

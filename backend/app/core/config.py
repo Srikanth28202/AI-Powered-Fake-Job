@@ -6,8 +6,9 @@ All secrets come from .env — nothing is hardcoded here.
 
 import os
 from functools import lru_cache
-from typing import List, Union
+from typing import List, Union, Optional, Any
 from pathlib import Path
+
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -44,8 +45,10 @@ class Settings(BaseSettings):
         default="dev-insecure-secret-key-change-in-production-min-32-chars",
         description="Secret key for signing JWT tokens. Never expose.",
     )
+    jwt_secret: Optional[str] = Field(default=None)
     jwt_algorithm: str = "HS256"
     jwt_access_token_expire_minutes: int = 30
+    access_token_expire_minutes: Optional[int] = None
     jwt_refresh_token_expire_days: int = 7
 
     # ── CORS ───────────────────────────────────────────────────
@@ -54,6 +57,7 @@ class Settings(BaseSettings):
         "http://127.0.0.1:5173",
         "http://localhost:3000",
     ]
+    cors_origins: Optional[Union[str, List[str]]] = None
 
     # ── ML ─────────────────────────────────────────────────────
     ml_model_path: str = "../ml/models/fake_job_model.pkl"
@@ -65,6 +69,23 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     log_format: str = "json"  # json | text
 
+    def model_post_init(self, __context: Any) -> None:
+        if self.jwt_secret and self.jwt_secret_key == "dev-insecure-secret-key-change-in-production-min-32-chars":
+            self.jwt_secret_key = self.jwt_secret
+        if self.access_token_expire_minutes is not None:
+            self.jwt_access_token_expire_minutes = self.access_token_expire_minutes
+        if self.cors_origins:
+            if isinstance(self.cors_origins, list):
+                self.allowed_origins = self.cors_origins
+            elif isinstance(self.cors_origins, str):
+                import json
+                try:
+                    parsed = json.loads(self.cors_origins)
+                    if isinstance(parsed, list):
+                        self.allowed_origins = parsed
+                except Exception:
+                    self.allowed_origins = [i.strip() for i in self.cors_origins.split(",") if i.strip()]
+
     @field_validator("allowed_origins", mode="before")
     @classmethod
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> List[str]:
@@ -73,6 +94,7 @@ class Settings(BaseSettings):
         elif isinstance(v, list):
             return v
         return ["http://localhost:5173", "http://127.0.0.1:5173"]
+
 
 
 @lru_cache

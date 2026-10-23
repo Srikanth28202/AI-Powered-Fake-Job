@@ -11,6 +11,7 @@ from typing import Optional, Dict, Any
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
 
+import certifi
 from app.core.config import get_settings
 
 logger = logging.getLogger(__name__)
@@ -38,14 +39,26 @@ async def connect_db() -> None:
     logger.info(f"Connecting to MongoDB at: {safe_uri} (db: {settings.mongodb_db_name})...")
 
     try:
+        motor_kwargs: Dict[str, Any] = {
+            "serverSelectionTimeoutMS": settings.mongodb_connect_timeout_ms,
+            "connectTimeoutMS": settings.mongodb_connect_timeout_ms,
+        }
+        # Provide certifi CA bundle for resilient SSL/TLS handshakes across OS environments
+        try:
+            ca_file = certifi.where()
+            if ca_file:
+                motor_kwargs["tlsCAFile"] = ca_file
+        except Exception:
+            pass
+
         _client = AsyncIOMotorClient(
             settings.mongodb_uri,
-            serverSelectionTimeoutMS=settings.mongodb_connect_timeout_ms,
-            connectTimeoutMS=settings.mongodb_connect_timeout_ms,
+            **motor_kwargs,
         )
         # Verify connectivity via admin command
         await _client.admin.command("ping")
         logger.info("MongoDB Atlas connection established successfully.")
+
     except (ConnectionFailure, ServerSelectionTimeoutError) as e:
         logger.warning(
             f"MongoDB connection ping failed: {type(e).__name__}. "
