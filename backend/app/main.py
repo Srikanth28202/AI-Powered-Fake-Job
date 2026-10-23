@@ -59,14 +59,16 @@ def create_app() -> FastAPI:
     app.add_exception_handler(Exception, global_unhandled_exception_handler)
 
     # ── CORS Middleware ───────────────────────────────────────
-    # Configured for frontend development origin (http://localhost:5173) and configured origins
+    # Configured for all localhost/127.0.0.1 ports (5173, 5174, 3000, etc.)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.allowed_origins,
+        allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
         allow_credentials=True,
         allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
         allow_headers=["*"],
     )
+
 
     # ── API Routers ───────────────────────────────────────────
     app.include_router(api_v1_router, prefix="/api/v1")

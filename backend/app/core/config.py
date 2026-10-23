@@ -55,9 +55,12 @@ class Settings(BaseSettings):
     allowed_origins: List[str] = [
         "http://localhost:5173",
         "http://127.0.0.1:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5174",
         "http://localhost:3000",
     ]
     cors_origins: Optional[Union[str, List[str]]] = None
+
 
     # ── ML ─────────────────────────────────────────────────────
     ml_model_path: str = "../ml/models/fake_job_model.pkl"
