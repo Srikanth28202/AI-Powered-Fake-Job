@@ -68,8 +68,16 @@ python -m venv venv
 venv\Scripts\activate        # Windows
 source venv/bin/activate     # macOS/Linux
 pip install -r requirements.txt
+
+# Start backend server
 uvicorn app.main:app --reload --port 8000
 ```
+
+Verify backend health and database connectivity:
+- **Liveness Probe**: `http://localhost:8000/health` (or `/api/v1/health`)
+- **MongoDB Atlas Connectivity**: `http://localhost:8000/health/db` (or `/api/v1/health/db`)
+- **Full System Health Check**: `http://localhost:8000/api/v1/health/full` (probes API, DB, and ML model availability)
+- **Interactive Swagger Docs**: `http://localhost:8000/docs`
 
 ### 4. ML Data Preparation & Pipeline
 
