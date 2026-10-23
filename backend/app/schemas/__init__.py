@@ -1,4 +1,3 @@
-# backend/app/schemas/__init__.py
 from app.schemas.user import (
     UserRegisterRequest,
     UserLoginRequest,
@@ -27,13 +26,6 @@ from app.schemas.analytics import (
     MonthlyTrendPoint,
     AnalyticsOverviewResponse,
 )
-from app.schemas.admin import (
-    AdminUpdateUserRequest,
-    AdminUserListResponse,
-    AuditEventRecord,
-    AuditLogResponse,
-    AdminDeleteConfirmation,
-)
 
 __all__ = [
     "UserRegisterRequest",
@@ -56,9 +48,5 @@ __all__ = [
     "CategoryBreakdownItem",
     "MonthlyTrendPoint",
     "AnalyticsOverviewResponse",
-    "AdminUpdateUserRequest",
-    "AdminUserListResponse",
-    "AuditEventRecord",
-    "AuditLogResponse",
-    "AdminDeleteConfirmation",
 ]
+

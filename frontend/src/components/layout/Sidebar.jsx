@@ -23,9 +23,9 @@ const navigationItems = [
   { label: 'Analyse Job', to: '/analyse', icon: SearchCheck, badge: 'AI Scan' },
   { label: 'Analysis History', to: '/history', icon: History },
   { label: 'Risk Analytics', to: '/analytics', icon: BarChart3 },
-  { label: 'Admin Console', to: '/admin', icon: UserCog, badge: 'Control' },
   { label: 'My Profile', to: '/profile', icon: User },
 ]
+
 
 
 
