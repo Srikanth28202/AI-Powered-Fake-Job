@@ -1,17 +1,24 @@
 # backend/app/dependencies.py
 """
-FastAPI dependency injection helpers.
+FastAPI dependency injection helpers for database, authentication, and security context.
+Ensures private endpoints require valid bearer tokens and active user accounts.
 """
 
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from typing import Optional
+from bson import ObjectId
+from fastapi import Depends, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.core.database import get_database
 from app.core.security import decode_token
+from app.core.errors import AuthenticationError, ForbiddenError
+from app.schemas.user import UserResponse
+from app.services.auth_service import AuthService
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
+# Use HTTPBearer for flexible Swagger UI authorization and header parsing
+security_bearer = HTTPBearer(auto_error=False)
 
 
 async def get_db() -> AsyncIOMotorDatabase:
@@ -19,29 +26,41 @@ async def get_db() -> AsyncIOMotorDatabase:
     return get_database()
 
 
+async def get_auth_service(db: AsyncIOMotorDatabase = Depends(get_db)) -> AuthService:
+    """FastAPI dependency: returns initialized AuthService."""
+    return AuthService(db)
+
+
 async def get_current_user(
-    token: str = Depends(oauth2_scheme),
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security_bearer),
     db: AsyncIOMotorDatabase = Depends(get_db),
-):
+) -> UserResponse:
     """
-    FastAPI dependency: decode JWT and return the authenticated user.
-    Raises 401 if the token is invalid or the user doesn't exist.
+    FastAPI dependency: decodes JWT bearer token, checks account active status,
+    and returns safe UserResponse (without password hash).
+    Raises 401 AuthenticationError if token is absent, expired, or corrupted.
     """
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+    if credentials is None or not credentials.credentials:
+        raise AuthenticationError("Authentication token is required.")
+
+    token = credentials.credentials
     try:
         payload = decode_token(token)
-        user_id: str = payload.get("sub")
-        if user_id is None:
-            raise credentials_exception
-    except JWTError:
-        raise credentials_exception
+        user_id: Optional[str] = payload.get("sub")
+        token_type: Optional[str] = payload.get("type")
 
-    user = await db["users"].find_one({"_id": user_id})
-    if user is None:
-        raise credentials_exception
+        if user_id is None or token_type != "access":
+            raise AuthenticationError("Invalid authentication token format or type.")
+    except JWTError as e:
+        raise AuthenticationError(f"Authentication token is invalid or expired: {str(e)}")
+
+    auth_service = AuthService(db)
+    try:
+        user = await auth_service.get_user_by_id(user_id)
+    except Exception:
+        raise AuthenticationError("Account corresponding to token does not exist.")
+
+    if not user.is_active:
+        raise ForbiddenError("Account is inactive.")
 
     return user

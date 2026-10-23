@@ -50,6 +50,33 @@ class ResourceNotFoundError(APIError):
         )
 
 
+class AuthenticationError(APIError):
+    def __init__(self, message: str = "Invalid credentials"):
+        super().__init__(
+            message=message,
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            error_code="AUTHENTICATION_FAILED",
+        )
+
+
+class DuplicateResourceError(APIError):
+    def __init__(self, message: str = "An account with this email already exists"):
+        super().__init__(
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            error_code="DUPLICATE_RESOURCE",
+        )
+
+
+class ForbiddenError(APIError):
+    def __init__(self, message: str = "You do not have permission to perform this action"):
+        super().__init__(
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            error_code="FORBIDDEN",
+        )
+
+
 async def api_error_handler(request: Request, exc: APIError) -> JSONResponse:
     logger.warning("api_error_raised", path=request.url.path, error_code=exc.error_code, message=exc.message)
     return JSONResponse(
