@@ -71,12 +71,23 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
 ```
 
-### 4. Train / Load ML Models
+### 4. ML Data Preparation & Pipeline
+
+For comprehensive details on the EMSCAD dataset, licensing, schema, and limitations, refer to [ml/data/DATASET.md](file:///c:/Users/Srika/OneDrive/Desktop/Fake%20Job/ml/data/DATASET.md).
 
 ```bash
 cd ml
 pip install -r requirements.txt
-python pipeline/train.py
+
+# 1. Place raw dataset at ml/data/raw/fake_job_postings.csv (downloaded from Kaggle / EMSCAD)
+# 2. Run exploratory data analysis and generate report + charts
+python -m ml.pipeline.eda
+
+# 3. Execute master data preparation pipeline (imputation, deduplication, cleaning, stratified split)
+python -m ml.pipeline.prepare_data
+
+# 4. Run automated test suite
+python -m pytest ml/tests/ -v
 ```
 
 ### 5. Start the Frontend
