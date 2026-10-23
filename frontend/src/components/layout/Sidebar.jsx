@@ -23,8 +23,8 @@ const navigationItems = [
   { label: 'Analyse Job', to: '/analyse', icon: SearchCheck, badge: 'AI Scan' },
   { label: 'Analysis History', to: '/history', icon: History },
   { label: 'Risk Analytics', to: '/analytics', icon: BarChart3 },
-  { label: 'My Profile', to: '/profile', icon: User },
 ]
+
 
 
 
@@ -163,26 +163,19 @@ export default function Sidebar({ isOpen, onClose }) {
           </div>
         </div>
 
-        {/* User Mini Profile */}
+        {/* System Version Badge */}
         <div className="p-3 border-t border-slate-800/80 bg-slate-950">
-          <Link to="/profile" className="p-2 rounded-xl bg-slate-900/60 border border-slate-800/60 flex items-center gap-2.5 overflow-hidden group">
-            <img
-              src={user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80'}
-              alt={user?.name || 'User'}
-              className="w-8 h-8 rounded-lg object-cover ring-1 ring-slate-700 group-hover:ring-indigo-500 transition-all"
-            />
-            <div className="truncate">
-              <div className="text-xs font-semibold text-slate-200 truncate group-hover:text-indigo-400 transition-colors">
-                Srikanth (Student)
-              </div>
-              <div className="text-[10px] text-slate-400 truncate">
-                AI & ML Project Lead
-              </div>
-            </div>
-          </Link>
+          <div className="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+            <span className="font-medium text-slate-300">Status</span>
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-emerald-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Operational
+            </span>
+          </div>
         </div>
       </aside>
     </>
   )
 }
+
 

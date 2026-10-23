@@ -12,7 +12,6 @@ import DashboardPage from './pages/DashboardPage'
 import AnalyseJobPage from './pages/AnalyseJobPage'
 import AnalysisHistoryPage from './pages/AnalysisHistoryPage'
 import AnalyticsPage from './pages/AnalyticsPage'
-import ProfilePage from './pages/ProfilePage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -63,8 +62,8 @@ function App() {
             <Route path="/analyze" element={<AnalyseJobPage />} />
             <Route path="/history" element={<AnalysisHistoryPage />} />
             <Route path="/analytics" element={<AnalyticsPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
           </Route>
+
 
 
           {/* 404 Fallback */}
