@@ -20,6 +20,13 @@ from app.schemas.job import (
     RuleWarningIndicator,
     VerificationRecommendation,
 )
+from app.schemas.analytics import (
+    RiskLevelCount,
+    WarningIndicatorCount,
+    CategoryBreakdownItem,
+    MonthlyTrendPoint,
+    AnalyticsOverviewResponse,
+)
 
 __all__ = [
     "UserRegisterRequest",
@@ -37,4 +44,9 @@ __all__ = [
     "FeatureAttribution",
     "RuleWarningIndicator",
     "VerificationRecommendation",
+    "RiskLevelCount",
+    "WarningIndicatorCount",
+    "CategoryBreakdownItem",
+    "MonthlyTrendPoint",
+    "AnalyticsOverviewResponse",
 ]

@@ -17,6 +17,7 @@ from app.core.errors import AuthenticationError, ForbiddenError
 from app.schemas.user import UserResponse
 from app.services.auth_service import AuthService
 from app.services.job_service import JobService
+from app.services.analytics_service import AnalyticsService
 
 # Use HTTPBearer for flexible Swagger UI authorization and header parsing
 security_bearer = HTTPBearer(auto_error=False)
@@ -35,6 +36,11 @@ async def get_auth_service(db: AsyncIOMotorDatabase = Depends(get_db)) -> AuthSe
 async def get_job_service(db: AsyncIOMotorDatabase = Depends(get_db)) -> JobService:
     """FastAPI dependency: returns initialized JobService."""
     return JobService(db)
+
+
+async def get_analytics_service(db: AsyncIOMotorDatabase = Depends(get_db)) -> AnalyticsService:
+    """FastAPI dependency: returns initialized AnalyticsService."""
+    return AnalyticsService(db)
 
 
 async def get_current_user(
@@ -70,3 +76,15 @@ async def get_current_user(
         raise ForbiddenError("Account is inactive.")
 
     return user
+
+
+async def get_current_admin_user(
+    current_user: UserResponse = Depends(get_current_user),
+) -> UserResponse:
+    """
+    FastAPI dependency: ensures authenticated user has the 'admin' role.
+    Raises 403 Forbidden if user is not an administrator.
+    """
+    if current_user.role != "admin":
+        raise ForbiddenError("Administrator privileges required for this endpoint.")
+    return current_user
