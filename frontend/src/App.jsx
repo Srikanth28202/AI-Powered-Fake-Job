@@ -6,6 +6,7 @@ import { Toaster } from 'react-hot-toast'
 
 // Layout
 import DashboardLayout from './components/layout/DashboardLayout'
+import ProtectedRoute from './components/layout/ProtectedRoute'
 
 // Pages
 import LoginPage from './pages/LoginPage'
@@ -63,14 +64,16 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
 
           {/* Protected SaaS App Dashboard Routes */}
-          <Route element={<DashboardLayout />}>
-            <Route path="/" element={<DashboardPage />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/analyse" element={<AnalyseJobPage />} />
-            <Route path="/analyze" element={<AnalyseJobPage />} />
-            <Route path="/history" element={<AnalysisHistoryPage />} />
-            <Route path="/analytics" element={<AnalyticsPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
+          <Route element={<ProtectedRoute />}>
+            <Route element={<DashboardLayout />}>
+              <Route path="/" element={<DashboardPage />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/analyse" element={<AnalyseJobPage />} />
+              <Route path="/analyze" element={<AnalyseJobPage />} />
+              <Route path="/history" element={<AnalysisHistoryPage />} />
+              <Route path="/analytics" element={<AnalyticsPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+            </Route>
           </Route>
 
           {/* 404 Fallback */}

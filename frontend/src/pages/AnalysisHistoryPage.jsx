@@ -27,12 +27,17 @@ import toast from 'react-hot-toast'
 
 export default function AnalysisHistoryPage() {
   const [searchParams, setSearchParams] = useSearchParams()
-  const { history, deleteFromHistory, clearAllHistory } = useJobAnalysisStore()
+  const { history, fetchHistory, isLoadingHistory, deleteFromHistory, clearAllHistory } = useJobAnalysisStore()
 
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '')
   const [riskFilter, setRiskFilter] = useState('ALL') // ALL, HIGH, SUSPICIOUS, SAFE
   const [sortBy, setSortBy] = useState('newest') // newest, highest_risk, lowest_risk
   const [selectedJob, setSelectedJob] = useState(null)
+
+  // Fetch real history from MongoDB on mount
+  useEffect(() => {
+    fetchHistory()
+  }, [fetchHistory])
 
   // Sync search param from URL
   useEffect(() => {
@@ -217,49 +222,57 @@ export default function AnalysisHistoryPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60 text-slate-300">
-                {filteredHistory.map((job) => (
-                  <tr
-                    key={job.id}
-                    onClick={() => setSelectedJob(job)}
-                    className="hover:bg-slate-800/50 cursor-pointer transition-colors group"
-                  >
-                    <td className="py-4 px-6">
-                      <div className="font-semibold text-slate-100 max-w-xs truncate group-hover:text-indigo-300 transition-colors">
-                        {job.title}
-                      </div>
-                      <span className="font-mono text-[10px] text-slate-500 mt-0.5 block">{job.id}</span>
-                    </td>
+                {filteredHistory.map((job) => {
+                  const score = job.riskScore ?? job.risk_score ?? 0
+                  const level = job.riskLevel ?? job.risk_level ?? 'Safe'
+                  const company = job.company || job.company_name || 'Unspecified'
+                  const salary = job.salary || job.salary_range || 'Unspecified'
+                  const dateVal = job.createdAt || job.created_at
+                  const dateStr = dateVal ? new Date(dateVal).toLocaleDateString() : 'Recent'
 
-                    <td className="py-4 px-4">
-                      <div className="text-slate-200 font-medium">{job.company}</div>
-                      <div className="text-xs text-slate-400">{job.location}</div>
-                    </td>
-
-                    <td className="py-4 px-4 text-xs font-mono text-slate-300 whitespace-nowrap">
-                      {job.salary || 'Unspecified'}
-                    </td>
-
-                    <td className="py-4 px-4 whitespace-nowrap">
-                      <RiskBadge level={job.riskLevel} />
-                    </td>
-
-                    <td className="py-4 px-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2">
-                        <div className="w-16 bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                          <div
-                            className={`h-full rounded-full ${
-                              job.riskScore >= 70 ? 'bg-rose-500' : job.riskScore >= 35 ? 'bg-amber-500' : 'bg-emerald-500'
-                            }`}
-                            style={{ width: `${job.riskScore}%` }}
-                          />
+                  return (
+                    <tr
+                      key={job.id}
+                      onClick={() => setSelectedJob(job)}
+                      className="hover:bg-slate-800/50 cursor-pointer transition-colors group"
+                    >
+                      <td className="py-4 px-6">
+                        <div className="font-semibold text-slate-100 max-w-xs truncate group-hover:text-indigo-300 transition-colors">
+                          {job.title}
                         </div>
-                        <span className="font-mono text-xs font-bold text-slate-200">{job.riskScore}%</span>
-                      </div>
-                    </td>
+                        <span className="font-mono text-[10px] text-slate-500 mt-0.5 block">{job.id}</span>
+                      </td>
 
-                    <td className="py-4 px-4 text-xs text-slate-400 whitespace-nowrap font-mono">
-                      {job.createdAt ? new Date(job.createdAt).toLocaleDateString() : 'Recent'}
-                    </td>
+                      <td className="py-4 px-4">
+                        <div className="text-slate-200 font-medium">{company}</div>
+                        <div className="text-xs text-slate-400">{job.location || 'Remote'}</div>
+                      </td>
+
+                      <td className="py-4 px-4 text-xs font-mono text-slate-300 whitespace-nowrap">
+                        {salary}
+                      </td>
+
+                      <td className="py-4 px-4 whitespace-nowrap">
+                        <RiskBadge level={level} />
+                      </td>
+
+                      <td className="py-4 px-4 whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          <div className="w-16 bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                            <div
+                              className={`h-full rounded-full ${
+                                score >= 70 ? 'bg-rose-500' : score >= 35 ? 'bg-amber-500' : 'bg-emerald-500'
+                              }`}
+                              style={{ width: `${score}%` }}
+                            />
+                          </div>
+                          <span className="font-mono text-xs font-bold text-slate-200">{score}%</span>
+                        </div>
+                      </td>
+
+                      <td className="py-4 px-4 text-xs text-slate-400 whitespace-nowrap font-mono">
+                        {dateStr}
+                      </td>
 
                     <td className="py-4 px-6 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center justify-end gap-1">
@@ -281,7 +294,8 @@ export default function AnalysisHistoryPage() {
                       </div>
                     </td>
                   </tr>
-                ))}
+                  )
+                })}
               </tbody>
             </table>
           </div>

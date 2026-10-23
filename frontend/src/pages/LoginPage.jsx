@@ -21,19 +21,38 @@ export default function LoginPage() {
     }
 
     setIsLoading(true)
-    await new Promise((r) => setTimeout(r, 600))
-    login(email, password)
+    const result = await login(email, password)
     setIsLoading(false)
-    toast.success('Welcome back, analyst!')
-    navigate('/dashboard')
+
+    if (result.success) {
+      toast.success('Welcome back to RiskShield!')
+      navigate('/dashboard')
+    } else {
+      toast.error(result.error || 'Authentication failed. Please verify credentials.')
+    }
   }
 
-  const handleQuickDemo = (demoEmail) => {
+  const handleQuickDemo = async (demoEmail) => {
     setEmail(demoEmail)
     setPassword('demoSecurePass2026!')
-    login(demoEmail, 'demoSecurePass2026!')
-    toast.success(`Logged in as ${demoEmail.split('@')[0]}`)
-    navigate('/dashboard')
+    setIsLoading(true)
+    // Attempt login or fallback to registering demo account if first time
+    let result = await login(demoEmail, 'demoSecurePass2026!')
+    if (!result.success) {
+      const { register } = useAuthStore.getState()
+      result = await register({
+        email: demoEmail,
+        password: 'demoSecurePass2026!',
+        full_name: demoEmail.includes('srikanth') ? 'Srikanth (Analyst)' : 'Talent Recruiter',
+      })
+    }
+    setIsLoading(false)
+    if (result.success) {
+      toast.success(`Logged in as ${demoEmail.split('@')[0]}`)
+      navigate('/dashboard')
+    } else {
+      toast.error(result.error || 'Unable to access demo session.')
+    }
   }
 
   return (

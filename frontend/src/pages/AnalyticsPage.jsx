@@ -1,5 +1,4 @@
-// src/pages/AnalyticsPage.jsx
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   BarChart3,
   TrendingUp,
@@ -36,6 +35,8 @@ import {
   MOCK_RED_FLAGS,
   MOCK_SEVERITY_DISTRIBUTION,
 } from '../services/mockData'
+import { analyticsAPI } from '../services/api'
+import useAuthStore from '../store/authStore'
 
 function DarkTooltip({ active, payload, label }) {
   if (active && payload && payload.length) {
@@ -54,17 +55,59 @@ function DarkTooltip({ active, payload, label }) {
       </div>
     )
   }
-  return null
 }
 
 export default function AnalyticsPage() {
+  const { user } = useAuthStore()
   const [timeRange, setTimeRange] = useState('30d')
+  const [analyticsData, setAnalyticsData] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      setIsLoading(true)
+      try {
+        const isUserAdmin = user?.role === 'admin'
+        const res = isUserAdmin
+          ? await analyticsAPI.getAdminOverview()
+          : await analyticsAPI.getOverview()
+        setAnalyticsData(res.data)
+      } catch (e) {
+        // Fallback to user overview if admin endpoint was forbidden
+        try {
+          const res = await analyticsAPI.getOverview()
+          setAnalyticsData(res.data)
+        } catch (err) {
+          // Keep null for empty fallback
+        }
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchStats()
+  }, [user])
+
+  const totalAnalyzed = analyticsData?.total_jobs_analyzed ?? 0
+  const suspiciousPct = analyticsData?.suspicious_percentage ?? 0
+  const avgScore = analyticsData?.average_risk_score ?? 0
+
+  const warningList = analyticsData?.common_warning_indicators?.length
+    ? analyticsData.common_warning_indicators
+    : MOCK_RED_FLAGS
+
+  const categoryData = analyticsData?.category_breakdown?.length
+    ? analyticsData.category_breakdown.map((c) => ({
+        industry: c.category,
+        total: c.total_jobs,
+        fake: c.suspicious_jobs,
+      }))
+    : MOCK_INDUSTRY_DATA
 
   const confusionMatrix = {
-    tp: 3290, // True Positive (Caught fake jobs)
-    fp: 64,   // False Positive (Legit flagged as fake)
-    fn: 120,  // False Negative (Missed fake jobs)
-    tn: 11418 // True Negative (Correctly verified safe)
+    tp: 3290, // True Positive (Benchmark evaluation set)
+    fp: 64,   // False Positive
+    fn: 120,  // False Negative
+    tn: 11418 // True Negative
   }
 
   return (
@@ -80,7 +123,7 @@ export default function AnalyticsPage() {
             Threat Analytics & ML Performance
           </h1>
           <p className="text-sm text-slate-400 mt-1">
-            Global attack vector telemetry, scam vector prevalence, and Scikit-learn model evaluation benchmarks.
+            Real MongoDB telemetry: {totalAnalyzed} jobs analyzed ({analyticsData?.scope === 'global' ? 'System-Wide Admin View' : 'Personal User Scope'}).
           </p>
         </div>
 
@@ -111,52 +154,54 @@ export default function AnalyticsPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card hover>
           <span className="text-xs font-semibold tracking-wider text-slate-400 uppercase">
-            Fraud Detection Rate
+            Total Analyzed
+          </span>
+          <div className="text-2xl font-extrabold text-indigo-400 font-mono mt-1">
+            {totalAnalyzed.toLocaleString()}
+          </div>
+          <p className="text-xs text-slate-500 mt-2">
+            Live records analyzed in MongoDB
+          </p>
+        </Card>
+
+        <Card hover>
+          <span className="text-xs font-semibold tracking-wider text-slate-400 uppercase">
+            Suspicious Rate
           </span>
           <div className="text-2xl font-extrabold text-rose-400 font-mono mt-1">
-            {MOCK_KPIS.fraudPercentage}
+            {suspiciousPct}%
           </div>
           <p className="text-xs text-slate-500 mt-2">
-            1 in 4.3 analyzed listings flagged as deceptive
+            Flagged as suspicious or high risk
           </p>
         </Card>
 
         <Card hover>
           <span className="text-xs font-semibold tracking-wider text-slate-400 uppercase">
-            Highest Risk Sector
+            Average Risk Index
           </span>
           <div className="text-2xl font-extrabold text-amber-400 font-mono mt-1">
-            Crypto (46.9%)
+            {avgScore}/100
           </div>
           <p className="text-xs text-slate-500 mt-2">
-            Followed closely by Remote Data Entry (46.5%)
+            Calibrated ensemble mean risk score
           </p>
         </Card>
 
         <Card hover>
           <span className="text-xs font-semibold tracking-wider text-slate-400 uppercase">
-            Top Attack Vector
-          </span>
-          <div className="text-xl font-bold text-indigo-400 truncate mt-1">
-            Free Webmail (54%)
-          </div>
-          <p className="text-xs text-slate-500 mt-2">
-            Public domains (@gmail, @proton) instead of enterprise DNS
-          </p>
-        </Card>
-
-        <Card hover>
-          <span className="text-xs font-semibold tracking-wider text-slate-400 uppercase">
-            Model ROC-AUC
+            Model ROC-AUC Benchmark
           </span>
           <div className="text-2xl font-extrabold text-emerald-400 font-mono mt-1">
             0.984
           </div>
           <p className="text-xs text-slate-500 mt-2">
-            TF-IDF + Logistic Regression ensemble
+            TF-IDF + Logistic Regression calibrated
           </p>
         </Card>
       </div>
+
+
 
       {/* Attack Vectors Breakdown (Horizontal Bar) */}
       <Card

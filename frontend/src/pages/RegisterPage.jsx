@@ -43,11 +43,21 @@ export default function RegisterPage() {
     }
 
     setIsLoading(true)
-    await new Promise((r) => setTimeout(r, 600))
-    register(formData)
+    const result = await register({
+      email: formData.email,
+      password: formData.password,
+      name: formData.name,
+      full_name: formData.name,
+      role: formData.role,
+    })
     setIsLoading(false)
-    toast.success('Account created successfully! Welcome to RiskShield AI.')
-    navigate('/dashboard')
+
+    if (result.success) {
+      toast.success('Account created successfully! Welcome to RiskShield AI.')
+      navigate('/dashboard')
+    } else {
+      toast.error(result.error || 'Registration failed. Email may already be in use.')
+    }
   }
 
   return (

@@ -1,5 +1,4 @@
-// src/pages/DashboardPage.jsx
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import {
   ShieldAlert,
@@ -37,6 +36,7 @@ import { Modal } from '../components/common/Modal'
 import { RiskGauge } from '../components/common/RiskGauge'
 import useAuthStore from '../store/authStore'
 import { useJobAnalysisStore } from '../store/jobAnalysisStore'
+import { analyticsAPI } from '../services/api'
 import {
   MOCK_KPIS,
   MOCK_TREND_DATA,
@@ -68,8 +68,26 @@ function CustomTooltip({ active, payload, label }) {
 
 export default function DashboardPage() {
   const { user } = useAuthStore()
-  const { history } = useJobAnalysisStore()
+  const { history, fetchHistory } = useJobAnalysisStore()
   const [selectedJob, setSelectedJob] = useState(null)
+  const [overview, setOverview] = useState(null)
+
+  useEffect(() => {
+    fetchHistory(1, 10)
+    const loadOverview = async () => {
+      try {
+        const res = await analyticsAPI.getOverview()
+        setOverview(res.data)
+      } catch (e) {
+        // Fallback gracefully
+      }
+    }
+    loadOverview()
+  }, [fetchHistory])
+
+  const totalAnalyzed = overview?.total_jobs_analyzed ?? history.length
+  const suspiciousPct = overview?.suspicious_percentage ?? 0
+  const avgRisk = overview?.average_risk_score ?? 0
 
   const recentScans = history.slice(0, 6)
 
@@ -122,11 +140,10 @@ export default function DashboardPage() {
             </div>
           </div>
           <div className="text-3xl font-extrabold text-white font-mono tracking-tight">
-            {MOCK_KPIS.totalScanned.toLocaleString()}
+            {totalAnalyzed.toLocaleString()}
           </div>
-          <div className="flex items-center gap-1.5 mt-3 text-xs text-emerald-400 font-medium">
-            <TrendingUp className="w-3.5 h-3.5" />
-            <span>+14.8% vs last month</span>
+          <div className="flex items-center gap-1.5 mt-3 text-xs text-indigo-400 font-medium">
+            <span>Live records analyzed</span>
           </div>
         </Card>
 
@@ -358,38 +375,44 @@ export default function DashboardPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60 text-slate-300">
-              {recentScans.map((job) => (
-                <tr key={job.id} className="hover:bg-slate-800/40 transition-colors">
-                  <td className="py-4 px-6">
-                    <div className="font-semibold text-slate-100 max-w-xs truncate">{job.title}</div>
-                    <div className="text-xs text-slate-400 mt-0.5 flex items-center gap-2">
-                      <span className="text-indigo-400 font-medium">{job.company}</span>
-                      <span>•</span>
-                      <span className="font-mono text-[10px] text-slate-500">{job.id}</span>
-                    </div>
-                  </td>
-                  <td className="py-4 px-4 text-xs text-slate-400 whitespace-nowrap">
-                    {job.location}
-                  </td>
-                  <td className="py-4 px-4 text-xs font-mono text-slate-300 whitespace-nowrap">
-                    {job.salary || 'Unspecified'}
-                  </td>
-                  <td className="py-4 px-4 whitespace-nowrap">
-                    <RiskBadge level={job.riskLevel} />
-                  </td>
-                  <td className="py-4 px-4 whitespace-nowrap">
-                    <div className="flex items-center gap-2">
-                      <div className="w-16 bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                        <div
-                          className={`h-full rounded-full ${
-                            job.riskScore >= 70 ? 'bg-rose-500' : job.riskScore >= 35 ? 'bg-amber-500' : 'bg-emerald-500'
-                          }`}
-                          style={{ width: `${job.riskScore}%` }}
-                        />
+              {recentScans.map((job) => {
+                const score = job.riskScore ?? job.risk_score ?? 0
+                const level = job.riskLevel ?? job.risk_level ?? 'Safe'
+                const company = job.company || job.company_name || 'Unspecified'
+                const salary = job.salary || job.salary_range || 'Unspecified'
+
+                return (
+                  <tr key={job.id} className="hover:bg-slate-800/40 transition-colors">
+                    <td className="py-4 px-6">
+                      <div className="font-semibold text-slate-100 max-w-xs truncate">{job.title}</div>
+                      <div className="text-xs text-slate-400 mt-0.5 flex items-center gap-2">
+                        <span className="text-indigo-400 font-medium">{company}</span>
+                        <span>•</span>
+                        <span className="font-mono text-[10px] text-slate-500">{job.id}</span>
                       </div>
-                      <span className="font-mono text-xs font-bold text-slate-200">{job.riskScore}%</span>
-                    </div>
-                  </td>
+                    </td>
+                    <td className="py-4 px-4 text-xs text-slate-400 whitespace-nowrap">
+                      {job.location || 'Remote'}
+                    </td>
+                    <td className="py-4 px-4 text-xs font-mono text-slate-300 whitespace-nowrap">
+                      {salary}
+                    </td>
+                    <td className="py-4 px-4 whitespace-nowrap">
+                      <RiskBadge level={level} />
+                    </td>
+                    <td className="py-4 px-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        <div className="w-16 bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                          <div
+                            className={`h-full rounded-full ${
+                              score >= 70 ? 'bg-rose-500' : score >= 35 ? 'bg-amber-500' : 'bg-emerald-500'
+                            }`}
+                            style={{ width: `${score}%` }}
+                          />
+                        </div>
+                        <span className="font-mono text-xs font-bold text-slate-200">{score}%</span>
+                      </div>
+                    </td>
                   <td className="py-4 px-6 text-right whitespace-nowrap">
                     <Button
                       variant="ghost"
@@ -401,7 +424,8 @@ export default function DashboardPage() {
                     </Button>
                   </td>
                 </tr>
-              ))}
+                )
+              })}
             </tbody>
           </table>
         </div>

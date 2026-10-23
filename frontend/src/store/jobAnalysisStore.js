@@ -1,122 +1,160 @@
 // src/store/jobAnalysisStore.js
+// Store for job analysis, history management, and backend inference integration
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
-import { MOCK_HISTORICAL_JOBS, MOCK_JOB_PRESETS, analyzeJobMock } from '../services/mockData'
+import { jobsAPI } from '../services/api'
+import { MOCK_JOB_PRESETS } from '../services/mockData'
 
 const initialForm = {
   title: '',
   company_name: '',
   location: '',
-  department: '',
   salary_range: '',
   contact_email: '',
   company_url: '',
   description: '',
-  requirements: '',
-  benefits: '',
+  company_profile: '',
+  required_experience: '',
+  required_education: '',
+  industry: '',
+  has_company_logo: false,
+  has_questions: false,
+  telecommuting: false,
 }
 
-export const useJobAnalysisStore = create(
-  persist(
-    (set, get) => ({
-      history: MOCK_HISTORICAL_JOBS,
-      currentInput: initialForm,
-      activeResult: null,
-      isAnalyzing: false,
-      analysisStep: '',
-      scanProgress: 0,
+export const useJobAnalysisStore = create((set, get) => ({
+  history: [],
+  historyTotal: 0,
+  historyPage: 1,
+  historyTotalPages: 1,
+  isLoadingHistory: false,
 
-      setInputField: (field, value) => {
-        set((state) => ({
-          currentInput: { ...state.currentInput, [field]: value },
-        }))
-      },
+  currentInput: initialForm,
+  activeResult: null,
+  isAnalyzing: false,
+  analysisStep: '',
+  scanProgress: 0,
+  analysisError: null,
 
-      setEntireInput: (newInput) => {
-        set({ currentInput: { ...initialForm, ...newInput } })
-      },
+  setInputField: (field, value) => {
+    set((state) => ({
+      currentInput: { ...state.currentInput, [field]: value },
+    }))
+  },
 
-      resetInput: () => {
-        set({ currentInput: initialForm })
-      },
+  setEntireInput: (newInput) => {
+    set({ currentInput: { ...initialForm, ...newInput } })
+  },
 
-      loadPresetById: (presetId) => {
-        const preset = MOCK_JOB_PRESETS.find((p) => p.id === presetId)
-        if (preset) {
-          const { id, ...formData } = preset
-          set({ currentInput: formData })
-        }
-      },
+  resetInput: () => {
+    set({ currentInput: initialForm, activeResult: null, analysisError: null })
+  },
 
-      runAnalysis: async (jobData) => {
-        const inputToAnalyze = jobData || get().currentInput
-        set({ isAnalyzing: true, scanProgress: 10, analysisStep: 'Normalizing text & tokenizing job tokens...' })
+  loadPresetById: (presetId) => {
+    const preset = MOCK_JOB_PRESETS.find((p) => p.id === presetId)
+    if (preset) {
+      const { id, ...formData } = preset
+      set({ currentInput: { ...initialForm, ...formData }, analysisError: null })
+    }
+  },
 
-        await new Promise((r) => setTimeout(r, 400))
-        set({ scanProgress: 35, analysisStep: 'Cross-referencing enterprise DNS & WHOIS records...' })
+  fetchHistory: async (page = 1, pageSize = 20) => {
+    set({ isLoadingHistory: true })
+    try {
+      const res = await jobsAPI.getHistory({ page, page_size: pageSize })
+      const data = res.data
+      set({
+        history: data.items || [],
+        historyTotal: data.total || 0,
+        historyPage: data.page || 1,
+        historyTotalPages: data.total_pages || 1,
+        isLoadingHistory: false,
+      })
+      return data
+    } catch (error) {
+      set({ isLoadingHistory: false })
+      return null
+    }
+  },
 
-        await new Promise((r) => setTimeout(r, 450))
-        set({ scanProgress: 60, analysisStep: 'Benchmarking compensation disparity against BLS database...' })
+  fetchAnalysisById: async (analysisId) => {
+    try {
+      const res = await jobsAPI.getAnalysisById(analysisId)
+      set({ activeResult: res.data })
+      return res.data
+    } catch (error) {
+      return null
+    }
+  },
 
-        await new Promise((r) => setTimeout(r, 500))
-        set({ scanProgress: 85, analysisStep: 'Extracting deception vectors & linguistic scam markers...' })
+  runAnalysis: async (jobData) => {
+    const inputToAnalyze = jobData || get().currentInput
+    set({
+      isAnalyzing: true,
+      analysisError: null,
+      scanProgress: 15,
+      analysisStep: 'Tokenizing job posting and running TF-IDF vectorization...',
+    })
 
-        await new Promise((r) => setTimeout(r, 400))
-        set({ scanProgress: 100, analysisStep: 'Generating calibrated ensemble risk evaluation...' })
+    try {
+      // Step progression animation
+      setTimeout(() => {
+        if (get().isAnalyzing) set({ scanProgress: 45, analysisStep: 'Computing calibrated fraud probability & model weights...' })
+      }, 300)
 
-        const result = analyzeJobMock(inputToAnalyze)
+      setTimeout(() => {
+        if (get().isAnalyzing) set({ scanProgress: 75, analysisStep: 'Evaluating security heuristic rules & scam indicators...' })
+      }, 600)
 
-        await new Promise((r) => setTimeout(r, 250))
-        set((state) => {
-          // Put new result at top of history
-          const historyEntry = {
-            id: result.id,
-            title: result.title,
-            company: result.company,
-            location: result.location,
-            riskLevel: result.riskLevel,
-            riskScore: result.riskScore,
-            fraudProbability: result.fraudProbability,
-            createdAt: result.createdAt,
-            category: result.category,
-            keyFlags: result.flags.map((f) => f.title),
-            salary: result.salary,
-            status: result.status,
-            fullResult: result,
-          }
+      const payload = {
+        title: inputToAnalyze.title,
+        description: inputToAnalyze.description,
+        company_name: inputToAnalyze.company_name || null,
+        company_profile: inputToAnalyze.company_profile || null,
+        company_url: inputToAnalyze.company_url || null,
+        contact_email: inputToAnalyze.contact_email || null,
+        location: inputToAnalyze.location || null,
+        salary_range: inputToAnalyze.salary_range || null,
+        employment_type: inputToAnalyze.employment_type || null,
+        required_experience: inputToAnalyze.required_experience || null,
+        required_education: inputToAnalyze.required_education || null,
+        industry: inputToAnalyze.industry || null,
+        has_company_logo: Boolean(inputToAnalyze.has_company_logo),
+        has_questions: Boolean(inputToAnalyze.has_questions),
+        telecommuting: Boolean(inputToAnalyze.telecommuting),
+      }
 
-          return {
-            isAnalyzing: false,
-            scanProgress: 0,
-            analysisStep: '',
-            activeResult: result,
-            history: [historyEntry, ...state.history],
-          }
-        })
+      const response = await jobsAPI.analyzeJob(payload)
+      const result = response.data
 
-        return result
-      },
+      set({
+        isAnalyzing: false,
+        scanProgress: 100,
+        analysisStep: 'Analysis Complete',
+        activeResult: result,
+        analysisError: null,
+      })
 
-      deleteFromHistory: (jobId) => {
-        set((state) => ({
-          history: state.history.filter((item) => item.id !== jobId),
-          activeResult: state.activeResult?.id === jobId ? null : state.activeResult,
-        }))
-      },
+      // Refresh history silently
+      get().fetchHistory(1)
 
-      clearAllHistory: () => {
-        set({ history: [] })
-      },
+      return result
+    } catch (error) {
+      const errorMsg =
+        error.response?.data?.error?.message ||
+        error.response?.data?.detail?.[0]?.msg ||
+        error.message ||
+        'Failed to complete job risk analysis.'
+      set({
+        isAnalyzing: false,
+        scanProgress: 0,
+        analysisStep: '',
+        analysisError: errorMsg,
+      })
+      throw new Error(errorMsg)
+    }
+  },
 
-      setActiveResult: (result) => {
-        set({ activeResult: result })
-      },
-    }),
-    {
-      name: 'fakejob-analysis-store',
-      partialize: (state) => ({
-        history: state.history,
-      }),
-    },
-  ),
-)
+  setActiveResult: (result) => {
+    set({ activeResult: result })
+  },
+}))

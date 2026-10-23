@@ -267,46 +267,42 @@ export default function AnalyseJobPage() {
             {/* Left Column: Risk Gauge & Model Metrics */}
             <div className="space-y-6">
               <Card title="Calibrated Risk Assessment" subtitle="Composite probability index">
-                <RiskGauge score={activeResult.riskScore} size={190} strokeWidth={15} />
+                <RiskGauge score={activeResult.riskScore ?? activeResult.risk_score ?? 0} size={190} strokeWidth={15} />
 
                 <div className="grid grid-cols-2 gap-2 mt-6 pt-4 border-t border-slate-800 text-xs">
                   <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800/80">
                     <span className="text-slate-400 text-[10px] uppercase font-semibold">Fraud Probability</span>
                     <div className="text-base font-bold font-mono text-slate-200 mt-0.5">
-                      {(activeResult.fraudProbability * 100).toFixed(0)}%
+                      {(((activeResult.ml_prediction?.fraud_probability ?? activeResult.fraudProbability) || 0) * 100).toFixed(1)}%
                     </div>
                   </div>
                   <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800/80">
                     <span className="text-slate-400 text-[10px] uppercase font-semibold">Model Confidence</span>
                     <div className="text-base font-bold font-mono text-slate-200 mt-0.5">
-                      {activeResult.modelMetadata?.confidence || '97.4%'}
+                      {(((activeResult.ml_prediction?.confidence ?? activeResult.confidence) || 0.95) * 100).toFixed(1)}%
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between text-[11px] text-slate-500 font-mono mt-3 px-1">
-                  <span>Engine: {activeResult.modelMetadata?.engine}</span>
-                  <span>Latency: {activeResult.modelMetadata?.latencyMs}ms</span>
+                  <span>Engine: {activeResult.ml_prediction?.model_family || 'TF-IDF + Logistic Regression'}</span>
+                  <span>Threshold: {activeResult.ml_prediction?.decision_threshold || 0.50}</span>
                 </div>
               </Card>
 
-              {/* Dimensional Trust Breakdown */}
-              <Card title="Trust Factor Scorecard" subtitle="Component scoring breakdown out of 100">
-                <div className="space-y-3 mt-1">
-                  {activeResult.radarBreakdown.map((item, idx) => (
-                    <div key={idx} className="space-y-1">
-                      <div className="flex justify-between text-xs font-medium">
-                        <span className="text-slate-300">{item.metric}</span>
-                        <span className="font-mono text-slate-400">{item.score}/100</span>
-                      </div>
-                      <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                        <div
-                          className={`h-full rounded-full ${
-                            item.score >= 70 ? 'bg-emerald-500' : item.score >= 40 ? 'bg-amber-500' : 'bg-rose-500'
-                          }`}
-                          style={{ width: `${item.score}%` }}
-                        />
-                      </div>
+              {/* Model Feature Attributions (Weights) */}
+              <Card title="Model Feature Weights" subtitle="Top linguistic tokens influencing prediction">
+                <div className="space-y-2 mt-1 max-h-60 overflow-y-auto pr-1">
+                  {(activeResult.model_feature_attributions || activeResult.radarBreakdown || []).map((item, idx) => (
+                    <div key={idx} className="flex items-center justify-between p-2 rounded-lg bg-slate-950/70 border border-slate-800/60 text-xs">
+                      <span className="font-mono text-slate-300 font-medium">{item.token || item.word || item.metric}</span>
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                        (item.weight ?? item.coefficient ?? 0) > 0 || item.impact?.includes('Fraud')
+                          ? 'bg-rose-500/20 text-rose-300'
+                          : 'bg-emerald-500/20 text-emerald-300'
+                      }`}>
+                        {item.impact || ((item.weight ?? item.coefficient ?? 0) > 0 ? 'Fraud Indication' : 'Safe')} ({(item.weight ?? item.score ?? 0).toFixed ? (item.weight ?? 0).toFixed(2) : item.score})
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -317,22 +313,22 @@ export default function AnalyseJobPage() {
             <div className="lg:col-span-2 space-y-6">
               {/* Identified Red Flags */}
               <Card
-                title={`Identified Deception Vectors (${activeResult.flags.length})`}
-                subtitle="High-risk markers and anomalous employment practices detected"
+                title={`Security Threat Indicators (${(activeResult.rule_based_warnings || activeResult.flags || []).length})`}
+                subtitle="High-risk heuristic patterns and deceptive markers detected"
               >
-                {activeResult.flags.length === 0 ? (
+                {(activeResult.rule_based_warnings || activeResult.flags || []).length === 0 ? (
                   <div className="p-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center">
                     <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto mb-2" />
                     <h4 className="text-base font-bold text-white">Clean Bill of Health</h4>
                     <p className="text-xs text-slate-300 max-w-md mx-auto mt-1">
-                      No fraudulent phrasing, phishing hooks, or anomalous compensation requests were identified.
+                      No upfront fees, cryptocurrency mule routing, or encrypted chat application interviews were identified.
                     </p>
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {activeResult.flags.map((flag) => (
+                    {(activeResult.rule_based_warnings || activeResult.flags || []).map((flag, idx) => (
                       <div
-                        key={flag.id}
+                        key={flag.id || idx}
                         className="p-4 rounded-xl bg-slate-950 border border-slate-800/80 hover:border-slate-700 transition-colors"
                       >
                         <div className="flex items-center justify-between gap-2 mb-1.5">
@@ -340,7 +336,7 @@ export default function AnalyseJobPage() {
                             <AlertTriangle className={`w-4 h-4 shrink-0 ${
                               flag.severity === 'Critical' ? 'text-rose-400' : 'text-amber-400'
                             }`} />
-                            <span>{flag.title}</span>
+                            <span>{flag.indicator || flag.title}</span>
                           </div>
                           <span
                             className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0 ${
@@ -353,7 +349,8 @@ export default function AnalyseJobPage() {
                           </span>
                         </div>
                         <p className="text-xs text-slate-400 leading-relaxed pl-6">
-                          {flag.description}
+                          {flag.category ? `Category: ${flag.category}. ` : ''}
+                          {flag.matched_text ? `Triggered by: "${flag.matched_text}"` : (flag.description || '')}
                         </p>
                       </div>
                     ))}
@@ -367,15 +364,28 @@ export default function AnalyseJobPage() {
                 subtitle="Practical safety protocols when handling this vacancy"
               >
                 <div className="space-y-2.5">
-                  {activeResult.recommendations.map((rec, idx) => (
+                  {(activeResult.verification_recommendations || activeResult.recommendations || []).map((rec, idx) => (
                     <div key={idx} className="flex items-start gap-3 p-3 rounded-xl bg-slate-950/70 border border-slate-800/60 text-xs text-slate-300 leading-relaxed">
                       <div className="w-5 h-5 rounded-full bg-indigo-500/10 text-indigo-400 flex items-center justify-center shrink-0 font-mono text-[11px] font-bold mt-0.5">
                         {idx + 1}
                       </div>
-                      <span>{rec}</span>
+                      <div className="flex-1">
+                        {rec.priority && (
+                          <span className={`text-[10px] font-bold mr-2 uppercase ${rec.priority === 'CRITICAL' ? 'text-rose-400' : 'text-amber-400'}`}>
+                            [{rec.priority}]
+                          </span>
+                        )}
+                        <span>{rec.guidance || rec}</span>
+                      </div>
                     </div>
                   ))}
                 </div>
+
+                {activeResult.disclaimer && (
+                  <p className="mt-4 pt-3 border-t border-slate-800/80 text-[11px] text-slate-500 italic">
+                    Disclaimer: {activeResult.disclaimer}
+                  </p>
+                )}
               </Card>
             </div>
           </div>

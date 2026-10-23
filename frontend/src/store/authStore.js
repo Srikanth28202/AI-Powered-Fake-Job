@@ -1,54 +1,115 @@
 // src/store/authStore.js
-// Zustand store for authentication state with mock user session
+// Zustand store for authentication state connected to FastAPI backend
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { MOCK_USER } from '../services/mockData'
+import { authAPI } from '../services/api'
 
 const useAuthStore = create(
   persist(
-    (set) => ({
-      user: MOCK_USER,
-      accessToken: 'demo_jwt_access_token_token_9921820',
-      isAuthenticated: true,
+    (set, get) => ({
+      user: null,
+      accessToken: null,
+      isAuthenticated: false,
+      isLoading: false,
+      authError: null,
 
-      login: (email, password) => {
-        const loggedUser = {
-          ...MOCK_USER,
-          email: email || MOCK_USER.email,
+      login: async (email, password) => {
+        set({ isLoading: true, authError: null })
+        try {
+          const res = await authAPI.login({ email, password })
+          const { access_token, user } = res.data
+          localStorage.setItem('access_token', access_token)
+          set({
+            user,
+            accessToken: access_token,
+            isAuthenticated: true,
+            isLoading: false,
+            authError: null,
+          })
+          return { success: true, user }
+        } catch (error) {
+          const msg =
+            error.response?.data?.error?.message ||
+            error.response?.data?.detail ||
+            'Invalid email or password.'
+          set({ isLoading: false, authError: msg })
+          return { success: false, error: msg }
         }
-        set({ user: loggedUser, accessToken: 'demo_jwt_token_active', isAuthenticated: true })
-        return true
       },
 
-      register: (userData) => {
-        const newUser = {
-          ...MOCK_USER,
-          name: userData.name || 'New Member',
-          email: userData.email,
-          role: userData.role || 'Talent Researcher',
+      register: async (userData) => {
+        set({ isLoading: true, authError: null })
+        try {
+          const regRes = await authAPI.register({
+            email: userData.email,
+            password: userData.password,
+            full_name: userData.full_name || userData.name,
+          })
+
+          // Automatically authenticate user after successful registration
+          const loginRes = await authAPI.login({
+            email: userData.email,
+            password: userData.password,
+          })
+
+          const { access_token, user } = loginRes.data
+          localStorage.setItem('access_token', access_token)
+          set({
+            user,
+            accessToken: access_token,
+            isAuthenticated: true,
+            isLoading: false,
+            authError: null,
+          })
+          return { success: true, user }
+        } catch (error) {
+          const msg =
+            error.response?.data?.error?.message ||
+            error.response?.data?.detail ||
+            'Registration failed. Please check your credentials.'
+          set({ isLoading: false, authError: msg })
+          return { success: false, error: msg }
         }
-        set({ user: newUser, accessToken: 'demo_jwt_token_registered', isAuthenticated: true })
-        return true
       },
 
-      logout: () => {
-        set({ user: null, accessToken: null, isAuthenticated: false })
+      logout: async () => {
+        try {
+          if (get().accessToken) {
+            await authAPI.logout()
+          }
+        } catch (e) {
+          // Ignore network errors on logout
+        } finally {
+          localStorage.removeItem('access_token')
+          set({
+            user: null,
+            accessToken: null,
+            isAuthenticated: false,
+            authError: null,
+          })
+        }
       },
+
+      fetchCurrentUser: async () => {
+        if (!get().accessToken) return null
+        try {
+          const res = await authAPI.getMe()
+          set({ user: res.data, isAuthenticated: true })
+          return res.data
+        } catch (error) {
+          if (error.response?.status === 401) {
+            get().logout()
+          }
+          return null
+        }
+      },
+
+      clearError: () => set({ authError: null }),
 
       updateProfile: (updatedData) => {
         set((state) => ({
           user: state.user ? { ...state.user, ...updatedData } : null,
         }))
-      },
-
-      regenerateApiKey: () => {
-        set((state) => {
-          if (!state.user) return state
-          const newKey = 'fjd_live_key_' + Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join('')
-          return {
-            user: { ...state.user, apiKey: newKey, apiKeyCreated: new Date().toISOString().split('T')[0] },
-          }
-        })
       },
     }),
     {

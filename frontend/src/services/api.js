@@ -1,5 +1,5 @@
 // src/services/api.js
-// Centralized Axios instance — all API calls go through here
+// Centralized Axios instance with environment base URL, token interceptors, and typed endpoints
 
 import axios from 'axios'
 
@@ -10,13 +10,26 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 15000,
+  timeout: 20000,
 })
 
-// ── Request Interceptor ──────────────────────────────────────
+// ── Request Interceptor: Attach JWT Bearer Token ──────────────
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('access_token')
+    // Check localStorage direct token or Zustand storage
+    let token = localStorage.getItem('access_token')
+    if (!token) {
+      try {
+        const storedAuth = localStorage.getItem('fakejob-auth-storage')
+        if (storedAuth) {
+          const parsed = JSON.parse(storedAuth)
+          token = parsed?.state?.accessToken
+        }
+      } catch (e) {
+        // Fallback silently
+      }
+    }
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
@@ -25,16 +38,47 @@ api.interceptors.request.use(
   (error) => Promise.reject(error),
 )
 
-// ── Response Interceptor ─────────────────────────────────────
+// ── Response Interceptor: Format errors and handle 401 ───────
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const status = error.response?.status
+    if (status === 401) {
+      // Clear token on authentication failure
       localStorage.removeItem('access_token')
-      window.location.href = '/login'
+      const isAuthPage = window.location.pathname === '/login' || window.location.pathname === '/register'
+      if (!isAuthPage) {
+        window.location.href = '/login'
+      }
     }
     return Promise.reject(error)
   },
 )
+
+// ── Typed API Endpoints ───────────────────────────────────────
+
+export const authAPI = {
+  register: (payload) => api.post('/auth/register', payload),
+  login: (payload) => api.post('/auth/login', payload),
+  logout: () => api.post('/auth/logout'),
+  getMe: () => api.get('/auth/me'),
+}
+
+export const jobsAPI = {
+  analyzeJob: (payload) => api.post('/jobs/analyze', payload),
+  getHistory: (params) => api.get('/jobs/history', { params }),
+  getAnalysisById: (id) => api.get(`/jobs/${id}`),
+}
+
+export const analyticsAPI = {
+  getOverview: (params) => api.get('/analytics/overview', { params }),
+  getAdminOverview: (params) => api.get('/analytics/admin/overview', { params }),
+}
+
+export const healthAPI = {
+  checkHealth: () => api.get('/health'),
+  checkDbHealth: () => api.get('/health/db'),
+  checkFullHealth: () => api.get('/health/full'),
+}
 
 export default api
