@@ -67,11 +67,13 @@ cd backend
 python -m venv venv
 venv\Scripts\activate        # Windows
 source venv/bin/activate     # macOS/Linux
-pip install -r requirements.txt
+# Install dependencies
+python -m pip install -r requirements.txt
 
 # Start backend server
-uvicorn app.main:app --reload --port 8000
+python -m uvicorn app.main:app --reload --port 8000
 ```
+
 
 Verify backend health and database connectivity:
 - **Liveness Probe**: `http://localhost:8000/health` (or `/api/v1/health`)

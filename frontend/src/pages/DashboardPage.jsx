@@ -101,30 +101,31 @@ export default function DashboardPage() {
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-semibold">
               <Cpu className="w-3.5 h-3.5" />
-              <span>AI Engine Active: Machine Learning NLP v1.4</span>
+              <span>AI Engine Active: Scikit-learn + TF-IDF NLP Model</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-              Welcome back, {user?.name ? user.name.split(' ')[0] : 'Analyst'}!
+              AI Fake Job Detection System
             </h1>
             <p className="text-sm text-slate-400 max-w-2xl leading-relaxed">
-              Real-time threat telemetry detected <span className="text-rose-400 font-semibold">18 new scam campaigns</span> today.
-              Ensemble classifier is currently operating at <span className="text-emerald-400 font-semibold">{MOCK_KPIS.modelAccuracy} accuracy</span>.
+              Student Academic Project by <strong className="text-slate-200">Srikanth</strong>. Detect fraudulent recruitment postings in real-time with machine learning and rule-based risk explainability.
             </p>
           </div>
 
           <div className="flex items-center gap-3 shrink-0">
             <Link to="/analyse">
               <Button variant="primary" size="lg" icon={Sparkles} className="shadow-indigo-500/30">
-                Analyse New Job
+                Analyse Job
               </Button>
             </Link>
             <Link to="/analytics">
               <Button variant="secondary" size="lg" icon={TrendingUp}>
-                Threat Intel
+                View Analytics
               </Button>
             </Link>
           </div>
         </div>
+
+
       </div>
 
       {/* KPI Cards Grid */}

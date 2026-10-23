@@ -6,19 +6,14 @@ import { Toaster } from 'react-hot-toast'
 
 // Layout
 import DashboardLayout from './components/layout/DashboardLayout'
-import ProtectedRoute from './components/layout/ProtectedRoute'
 
 // Pages
-import LoginPage from './pages/LoginPage'
-import RegisterPage from './pages/RegisterPage'
 import DashboardPage from './pages/DashboardPage'
 import AnalyseJobPage from './pages/AnalyseJobPage'
 import AnalysisHistoryPage from './pages/AnalysisHistoryPage'
 import AnalyticsPage from './pages/AnalyticsPage'
 import ProfilePage from './pages/ProfilePage'
 import AdminDashboardPage from './pages/AdminDashboardPage'
-import NotFoundPage from './pages/NotFoundPage'
-
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -61,27 +56,20 @@ function App() {
         />
 
         <Routes>
-          {/* Public Auth Routes */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-
-          {/* Protected SaaS App Dashboard Routes */}
-          <Route element={<ProtectedRoute />}>
-            <Route element={<DashboardLayout />}>
-              <Route path="/" element={<DashboardPage />} />
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/analyse" element={<AnalyseJobPage />} />
-              <Route path="/analyze" element={<AnalyseJobPage />} />
-              <Route path="/history" element={<AnalysisHistoryPage />} />
-              <Route path="/analytics" element={<AnalyticsPage />} />
-              <Route path="/admin" element={<AdminDashboardPage />} />
-              <Route path="/profile" element={<ProfilePage />} />
-            </Route>
-
+          {/* Main Direct SaaS App Navigation */}
+          <Route element={<DashboardLayout />}>
+            <Route path="/" element={<DashboardPage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/analyse" element={<AnalyseJobPage />} />
+            <Route path="/analyze" element={<AnalyseJobPage />} />
+            <Route path="/history" element={<AnalysisHistoryPage />} />
+            <Route path="/analytics" element={<AnalyticsPage />} />
+            <Route path="/admin" element={<AdminDashboardPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
           </Route>
 
           {/* 404 Fallback */}
-          <Route path="*" element={<NotFoundPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
@@ -89,3 +77,4 @@ function App() {
 }
 
 export default App
+

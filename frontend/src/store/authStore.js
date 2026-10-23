@@ -4,14 +4,27 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { authAPI } from '../services/api'
 
+const DEFAULT_STUDENT_USER = {
+  id: 'usr-student-01',
+  name: 'Srikanth',
+  full_name: 'Srikanth',
+  email: 'student@example.com',
+  role: 'admin',
+  title: 'Project Lead',
+  is_active: true,
+  scansUsed: 14,
+  scansLimit: 100,
+}
+
 const useAuthStore = create(
   persist(
     (set, get) => ({
-      user: null,
-      accessToken: null,
-      isAuthenticated: false,
+      user: DEFAULT_STUDENT_USER,
+      accessToken: 'demo-student-token-2026',
+      isAuthenticated: true,
       isLoading: false,
       authError: null,
+
 
       login: async (email, password) => {
         set({ isLoading: true, authError: null })

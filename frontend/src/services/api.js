@@ -42,18 +42,11 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const status = error.response?.status
-    if (status === 401) {
-      // Clear token on authentication failure
-      localStorage.removeItem('access_token')
-      const isAuthPage = window.location.pathname === '/login' || window.location.pathname === '/register'
-      if (!isAuthPage) {
-        window.location.href = '/login'
-      }
-    }
+    // For student demo, never force page redirects on 401
     return Promise.reject(error)
   },
 )
+
 
 // ── Typed API Endpoints ───────────────────────────────────────
 
