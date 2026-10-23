@@ -23,6 +23,18 @@ def load_model() -> None:
     model_path = Path(settings.ml_model_path)
     vectorizer_path = Path(settings.ml_vectorizer_path)
 
+    # Fallback to absolute paths relative to repository root if relative path not found
+    repo_root = Path(__file__).resolve().parents[3]
+    if not model_path.exists():
+        fallback_model = repo_root / "ml" / "models" / "fake_job_model.pkl"
+        if fallback_model.exists():
+            model_path = fallback_model
+
+    if not vectorizer_path.exists():
+        fallback_vec = repo_root / "ml" / "models" / "tfidf_vectorizer.pkl"
+        if fallback_vec.exists():
+            vectorizer_path = fallback_vec
+
     if not model_path.exists():
         logger.warning(f"ML model not found at {model_path}. Predictions will be unavailable.")
         return
@@ -32,7 +44,7 @@ def load_model() -> None:
 
     _model = joblib.load(model_path)
     _vectorizer = joblib.load(vectorizer_path)
-    logger.info("ML model and vectorizer loaded successfully.")
+    logger.info(f"ML model loaded from {model_path}")
 
 
 def predict(job_text: str) -> dict:

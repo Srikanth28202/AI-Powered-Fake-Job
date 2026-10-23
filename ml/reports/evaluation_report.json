@@ -1,0 +1,32 @@
+{
+  "evaluation_timestamp": "2026-10-23T16:24:48.671953",
+  "test_sample_count": 3576,
+  "test_legitimate_count": 3403,
+  "test_fraudulent_count": 173,
+  "confusion_matrix": {
+    "true_negatives": 3348,
+    "false_positives": 55,
+    "false_negatives": 17,
+    "true_positives": 156
+  },
+  "legitimate_class (0)": {
+    "precision": 0.9949,
+    "recall": 0.9838,
+    "f1_score": 0.9894,
+    "support": 3403
+  },
+  "fraudulent_class (1)": {
+    "precision": 0.7393,
+    "recall": 0.9017,
+    "f1_score": 0.8125,
+    "support": 173
+  },
+  "overall_summary": {
+    "accuracy": 0.9799,
+    "balanced_accuracy": 0.9428,
+    "macro_f1": 0.9009,
+    "weighted_f1": 0.9808,
+    "roc_auc": 0.9884,
+    "pr_auc": 0.9239
+  }
+}

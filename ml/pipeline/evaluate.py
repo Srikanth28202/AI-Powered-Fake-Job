@@ -1,82 +1,49 @@
 # ml/pipeline/evaluate.py
 """
-Standalone evaluation script — loads saved model artifacts and
-produces a detailed performance report.
+Standalone evaluation script for Fake Job Detection.
+Loads saved model artifacts, scores the stratified holdout test split,
+and generates performance charts and metrics reports.
 
 Usage:
-    python ml/pipeline/evaluate.py
+    python -m ml.pipeline.evaluate
 """
 
-import logging
-import json
-import joblib
-import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.metrics import (
-    classification_report,
-    confusion_matrix,
-    roc_auc_score,
-    roc_curve,
-    precision_recall_curve,
-)
-
 import sys
+import logging
+import joblib
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).parents[2]))
 
-from ml.config import MODEL_PATH, VECTORIZER_PATH, REPORTS_DIR
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
+from ml.config import MODEL_PATH, VECTORIZER_PATH, PIPELINE_PATH
 from ml.pipeline.preprocess import load_and_preprocess
+from ml.pipeline.train import evaluate_pipeline
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
 
 
-def plot_roc_curve(y_test, y_prob):
-    fpr, tpr, _ = roc_curve(y_test, y_prob)
-    auc = roc_auc_score(y_test, y_prob)
-
-    plt.figure(figsize=(8, 5))
-    plt.plot(fpr, tpr, label=f"ROC AUC = {auc:.4f}", color="#6366f1", lw=2)
-    plt.plot([0, 1], [0, 1], "k--", lw=1)
-    plt.xlabel("False Positive Rate")
-    plt.ylabel("True Positive Rate")
-    plt.title("ROC Curve — Fake Job Detection")
-    plt.legend()
-    plt.tight_layout()
-    path = REPORTS_DIR / "roc_curve.png"
-    plt.savefig(path, dpi=150)
-    logger.info(f"ROC curve saved → {path}")
-
-
 def run_evaluation():
-    logger.info("Loading artifacts...")
-    if not MODEL_PATH.exists() or not VECTORIZER_PATH.exists():
-        raise FileNotFoundError("Model or vectorizer not found. Run train.py first.")
+    """Load persisted artifacts and evaluate on holdout test set."""
+    logger.info("Loading persisted ML pipeline artifacts...")
 
-    vectorizer = joblib.load(VECTORIZER_PATH)
-    model = joblib.load(MODEL_PATH)
+    pipeline = None
+    if PIPELINE_PATH.exists():
+        pipeline = joblib.load(PIPELINE_PATH)
+    elif MODEL_PATH.exists() and VECTORIZER_PATH.exists():
+        from sklearn.pipeline import Pipeline
+        vectorizer = joblib.load(VECTORIZER_PATH)
+        model = joblib.load(MODEL_PATH)
+        pipeline = Pipeline([("tfidf", vectorizer), ("clf", model)])
+    else:
+        raise FileNotFoundError(
+            f"Artifacts not found in {MODEL_PATH.parent}. Please run train.py first."
+        )
 
     _, X_test, _, y_test = load_and_preprocess()
-
-    X_test_vec = vectorizer.transform(X_test)
-    y_pred = model.predict(X_test_vec)
-    y_prob = model.predict_proba(X_test_vec)[:, 1]
-
-    report = classification_report(y_test, y_pred, output_dict=True)
-    auc = roc_auc_score(y_test, y_prob)
-
-    logger.info("\n" + classification_report(y_test, y_pred))
-    logger.info(f"ROC-AUC: {auc:.4f}")
-
-    # Save JSON report
-    report["roc_auc"] = auc
-    report_path = REPORTS_DIR / "evaluation_report.json"
-    with open(report_path, "w") as f:
-        json.dump(report, f, indent=2)
-    logger.info(f"Evaluation report saved → {report_path}")
-
-    # Plot ROC curve
-    plot_roc_curve(y_test, y_prob)
+    metrics = evaluate_pipeline(pipeline, X_test, y_test, save_reports=True)
+    logger.info("Standalone evaluation completed successfully.")
+    return metrics
 
 
 if __name__ == "__main__":

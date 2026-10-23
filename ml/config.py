@@ -22,6 +22,7 @@ for _dir in [RAW_DATA_DIR, PROCESSED_DATA_DIR, MODELS_DIR, REPORTS_DIR]:
 # ── Artifact Paths ────────────────────────────────────────────
 MODEL_PATH = MODELS_DIR / "fake_job_model.pkl"
 VECTORIZER_PATH = MODELS_DIR / "tfidf_vectorizer.pkl"
+PIPELINE_PATH = MODELS_DIR / "full_pipeline.pkl"
 LABEL_ENCODER_PATH = MODELS_DIR / "label_encoder.pkl"
 
 # ── Dataset ───────────────────────────────────────────────────

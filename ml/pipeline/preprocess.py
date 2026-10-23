@@ -2,8 +2,8 @@
 """
 Data loading and feature engineering for the fake job detection pipeline.
 
-Expected input: Kaggle "Real or Fake? Fake Job Posting Prediction" dataset
-    https://www.kaggle.com/datasets/shivamb/real-or-fake-fake-jobposting-prediction
+Ensures strict zero-leakage training by separating text preparation from
+vocabulary extraction and feature transformation.
 
 Usage:
     from ml.pipeline.preprocess import load_and_preprocess
@@ -11,73 +11,99 @@ Usage:
 """
 
 import logging
-import re
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from typing import Tuple
 
 import sys
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).parents[2]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from ml.config import (
     RAW_DATA_FILE,
     TEXT_COLUMNS,
-    BINARY_COLUMNS,
     TARGET_COLUMN,
     TEST_SIZE,
     RANDOM_STATE,
 )
+from ml.pipeline.clean_text import clean_text
 
 logger = logging.getLogger(__name__)
 
 
-def clean_text(text: str) -> str:
-    """Lowercase, strip HTML tags, and normalise whitespace."""
-    if not isinstance(text, str):
-        return ""
-    text = re.sub(r"<[^>]+>", " ", text)           # strip HTML
-    text = re.sub(r"[^a-zA-Z0-9\s]", " ", text)    # remove special chars
-    text = re.sub(r"\s+", " ", text).strip()
-    return text.lower()
-
-
 def combine_text_features(df: pd.DataFrame) -> pd.Series:
-    """Concatenate all text columns into a single feature string."""
+    """
+    Concatenate all available text columns into a single normalized feature string per job.
+
+    Columns combined: title, company_profile, description, requirements, benefits.
+    """
     cols = [c for c in TEXT_COLUMNS if c in df.columns]
+    if not cols:
+        raise ValueError(f"None of the required text columns {TEXT_COLUMNS} found in DataFrame.")
+
     return df[cols].fillna("").apply(
-        lambda row: " ".join(clean_text(v) for v in row), axis=1
+        lambda row: " ".join(clean_text(str(v)) for v in row if str(v).strip()),
+        axis=1,
     )
 
 
-def load_and_preprocess():
+def load_and_preprocess(
+    file_path: Path = RAW_DATA_FILE,
+    test_size: float = TEST_SIZE,
+    random_state: int = RANDOM_STATE,
+) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
     """
-    Load raw CSV data, engineer features, and split into train/test sets.
+    Load raw CSV data, normalize text, and execute stratified train/test partitioning.
+
+    Guarantees:
+    1. Stratified split so minority fraud class ratio (~4.84%) is preserved in both sets.
+    2. Zero data leakage: No vectorizer or statistical aggregations are fit on test data.
 
     Returns:
-        (X_train, X_test, y_train, y_test) — raw text Series and binary labels.
+        Tuple: (X_train, X_test, y_train, y_test)
     """
-    if not RAW_DATA_FILE.exists():
+    path = Path(file_path)
+    if not path.exists():
         raise FileNotFoundError(
-            f"Raw data not found at {RAW_DATA_FILE}. "
-            "Download the Kaggle dataset and place it there."
+            f"Raw dataset not found at {path.resolve()}. "
+            "Please download 'fake_job_postings.csv' per instructions in ml/data/DATASET.md."
         )
 
-    logger.info(f"Loading data from {RAW_DATA_FILE}...")
-    df = pd.read_csv(RAW_DATA_FILE)
+    logger.info(f"Loading raw dataset from {path.resolve()}...")
+    df = pd.read_csv(path)
 
-    logger.info(f"Dataset shape: {df.shape}")
-    logger.info(f"Fraud rate: {df[TARGET_COLUMN].mean():.2%}")
+    if TARGET_COLUMN not in df.columns:
+        raise ValueError(f"Target column '{TARGET_COLUMN}' missing from dataset.")
 
-    # Combine text features
+    total_rows = len(df)
+    fraud_count = int(df[TARGET_COLUMN].sum())
+    fraud_rate = (fraud_count / total_rows) * 100.0
+    logger.info(
+        f"Loaded {total_rows:,} records. Fraudulent: {fraud_count:,} ({fraud_rate:.2f}%)"
+    )
+
+    # Clean and combine text features
+    logger.info("Combining and normalizing text features across columns...")
     X = combine_text_features(df)
     y = df[TARGET_COLUMN].astype(int)
 
+    # Stratified split to preserve class proportions without leakage
+    logger.info(f"Splitting into Train ({(1-test_size)*100:.0f}%) and Test ({test_size*100:.0f}%) with stratification...")
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y,
-        test_size=TEST_SIZE,
-        random_state=RANDOM_STATE,
+        X,
+        y,
+        test_size=test_size,
+        random_state=random_state,
         stratify=y,
     )
 
-    logger.info(f"Train: {len(X_train)}, Test: {len(X_test)}")
+    train_fraud = y_train.sum()
+    test_fraud = y_test.sum()
+    logger.info(
+        f"Train partition: {len(X_train):,} samples ({train_fraud:,} fraudulent, {train_fraud/len(y_train):.2%})"
+    )
+    logger.info(
+        f"Test partition:  {len(X_test):,} samples ({test_fraud:,} fraudulent, {test_fraud/len(y_test):.2%})"
+    )
+
     return X_train, X_test, y_train, y_test
