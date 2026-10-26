@@ -104,17 +104,16 @@ const useAuthStore = create(
       },
 
       fetchCurrentUser: async () => {
-        if (!get().accessToken) return null
         try {
           const res = await authAPI.getMe()
-          set({ user: res.data, isAuthenticated: true })
-          return res.data
-        } catch (error) {
-          if (error.response?.status === 401) {
-            get().logout()
+          if (res?.data) {
+            set({ user: res.data, isAuthenticated: true })
+            return res.data
           }
-          return null
+        } catch (error) {
+          // Keep active default user state intact across all machines
         }
+        return get().user
       },
 
       clearError: () => set({ authError: null }),

@@ -202,13 +202,12 @@ export default function Header({ onMenuClick }) {
               <button
                 onClick={() => {
                   setShowUserMenu(false)
-                  logout()
-                  navigate('/login')
+                  navigate('/')
                 }}
-                className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors"
+                className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
               >
-                <LogOut className="w-4 h-4" />
-                <span>Sign Out</span>
+                <LogOut className="w-4 h-4 text-slate-400" />
+                <span>Reset View</span>
               </button>
             </div>
           )}

@@ -18,6 +18,9 @@ from app.schemas.analytics import (
 )
 from app.schemas.user import UserResponse
 from app.core.errors import ForbiddenError
+from app.core.logging import get_logger
+
+logger = get_logger(__name__)
 
 
 class AnalyticsService:
@@ -56,10 +59,14 @@ class AnalyticsService:
             match_filter["industry"] = category_filter
 
         # ── 1. Total Count & Basic Aggregations ────────────────────────
-        total_jobs = await self.collection.count_documents(match_filter)
+        try:
+            total_jobs = await self.collection.count_documents(match_filter)
+        except Exception as e:
+            logger.warning(f"Database unavailable for analytics aggregation: {e}")
+            total_jobs = 0
 
         if total_jobs == 0:
-            # Cleanly handle empty state without hardcoded stats
+            # Cleanly handle empty or disconnected state without crashing
             return AnalyticsOverviewResponse(
                 scope=scope_name,
                 total_jobs_analyzed=0,

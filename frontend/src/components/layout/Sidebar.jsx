@@ -30,13 +30,7 @@ const navigationItems = [
 
 
 export default function Sidebar({ isOpen, onClose }) {
-  const { user, logout } = useAuthStore()
-  const navigate = useNavigate()
-
-  const handleLogout = () => {
-    logout()
-    navigate('/login')
-  }
+  const { user } = useAuthStore()
 
   const scansPercentage = user ? Math.round((user.scansUsed / user.scansLimit) * 100) : 50
 

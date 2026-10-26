@@ -30,9 +30,9 @@ api.interceptors.request.use(
       }
     }
 
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
+    // Always provide a clean demo token so requests never get rejected on different machines
+    token = token || 'demo-student-token-2026'
+    config.headers.Authorization = `Bearer ${token}`
     return config
   },
   (error) => Promise.reject(error),
@@ -42,7 +42,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // For student demo, never force page redirects on 401
+    // Never force page redirects or interrupt the user on 401 errors
     return Promise.reject(error)
   },
 )

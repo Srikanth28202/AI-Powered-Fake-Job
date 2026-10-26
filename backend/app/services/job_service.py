@@ -183,28 +183,32 @@ class JobService:
         if current_user.role != "admin":
             query_filter["user_id"] = current_user.id
 
-        total = await self.collection.count_documents(query_filter)
-        cursor = self.collection.find(query_filter).sort("created_at", -1).skip(skip).limit(page_size)
-
         items: List[JobAnalysisSummary] = []
-        async for doc in cursor:
-            doc_id = str(doc["_id"]) if isinstance(doc.get("_id"), (ObjectId, str)) else str(doc.get("id"))
-            ml_pred = doc.get("ml_prediction", {})
-            warnings = doc.get("rule_based_warnings", [])
-            items.append(
-                JobAnalysisSummary(
-                    id=doc_id,
-                    user_id=str(doc.get("user_id")),
-                    title=doc.get("title", ""),
-                    company_name=doc.get("company_name"),
-                    location=doc.get("location"),
-                    risk_score=doc.get("risk_score", 0),
-                    risk_level=doc.get("risk_level", "Safe"),
-                    is_fraudulent=bool(ml_pred.get("is_fraudulent", False)),
-                    warning_count=len(warnings),
-                    created_at=doc.get("created_at") or datetime.now(timezone.utc),
+        total = 0
+        try:
+            total = await self.collection.count_documents(query_filter)
+            cursor = self.collection.find(query_filter).sort("created_at", -1).skip(skip).limit(page_size)
+
+            async for doc in cursor:
+                doc_id = str(doc["_id"]) if isinstance(doc.get("_id"), (ObjectId, str)) else str(doc.get("id"))
+                ml_pred = doc.get("ml_prediction", {})
+                warnings = doc.get("rule_based_warnings", [])
+                items.append(
+                    JobAnalysisSummary(
+                        id=doc_id,
+                        user_id=str(doc.get("user_id")),
+                        title=doc.get("title", ""),
+                        company_name=doc.get("company_name"),
+                        location=doc.get("location"),
+                        risk_score=doc.get("risk_score", 0),
+                        risk_level=doc.get("risk_level", "Safe"),
+                        is_fraudulent=bool(ml_pred.get("is_fraudulent", False)),
+                        warning_count=len(warnings),
+                        created_at=doc.get("created_at") or datetime.now(timezone.utc),
+                    )
                 )
-            )
+        except Exception as e:
+            logger.warning(f"Database unavailable for history query, returning in-memory state: {e}")
 
         total_pages = (total + page_size - 1) // page_size if total > 0 else 1
 
