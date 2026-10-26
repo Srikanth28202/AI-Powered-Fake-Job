@@ -37,6 +37,169 @@ export const MOCK_KPIS = {
 
 export const MOCK_JOB_PRESETS = [
   {
+    id: 'fake-check-scam',
+    title: 'Administrative Data Entry Assistant & Invoice Processor',
+    company_name: 'Apex Global Logistics LLC',
+    location: 'Remote (US & Canada)',
+    department: 'Administrative Operations',
+    salary_range: '$45 - $55 / hr (Part-Time / Flexible)',
+    contact_email: 'apex_recruitment_coordinator@gmail.com',
+    company_url: 'http://apex-logistics-freecareers.com',
+    category: 'Fake (Upfront Fee / Fake Check)',
+    verdict: 'FRAUDULENT (94/100 Risk)',
+    why_explanation: 'Classic Fake Check Overpayment Scam: Unrealistic hourly wage ($50/hr for zero experience), uses free webmail (@gmail.com) instead of corporate email, and requires depositing an advance check and wiring funds to an "equipment supplier".',
+    description: `We are urgently seeking immediate Data Entry Operators to work remotely from home! No previous administrative experience required. Flexible working hours that fit your schedule.
+
+You will be responsible for entering client shipping manifests and inventory numbers into our proprietary portal. 
+
+IMPORTANT SETUP PROCESS: A pre-approved company cashier's check of $3,500 will be mailed to your address upon onboarding. You must deposit this check into your personal account and wire funds to our certified office hardware supplier to purchase your encrypted workstation package.`,
+    requirements: `Requirements:
+- Must have basic computer knowledge and typing speed of at least 35 WPM.
+- Must be 18+ years old with reliable internet access.
+- Must hold an active personal checking account to process the initial equipment check deposit.`,
+    benefits: `Benefits:
+- Fast weekly direct deposits.
+- Work any 3-4 hours per day at your leisure.
+- $500 sign-on bonus upon successful software setup.`,
+    has_company_logo: false,
+    has_questions: false,
+    telecommuting: true,
+  },
+  {
+    id: 'fake-crypto-mule',
+    title: 'Financial Payment Task Specialist & Settlement Agent',
+    company_name: 'Binance Global Clearing Trust',
+    location: 'Remote (Worldwide)',
+    department: 'Treasury & Client Settlements',
+    salary_range: '$8,500 - $14,000 / month + 5% commission',
+    contact_email: 'binance_hr_direct@protonmail.com',
+    company_url: 'http://binance-vip-verification-task.xyz',
+    category: 'Fake (Money Mule / Crypto Scheme)',
+    verdict: 'FRAUDULENT (98/100 Risk)',
+    why_explanation: 'Money Laundering & Mule Scam: Impersonates major exchange, conducts interviews exclusively over Telegram, asks candidates to receive third-party bank deposits and convert them to Bitcoin/USDT for 5% commission.',
+    description: `URGENT VACANCY: Earn high daily income working 1-2 hours per day! We are an authorized international payment processing partner.
+
+Your primary duty is to receive client funds into your personal account, convert them into cryptocurrency (USDT or Bitcoin) via nearest crypto ATM or P2P exchange, and forward the funds to our corporate wallet while keeping a 5% commission.
+
+INTERVIEW PROCESS: No formal resume or interview required. All communication is conducted via Telegram. Message our Senior Recruitment Officer on Telegram @HR_FastHire_Manager to start immediately.`,
+    requirements: `Requirements:
+- Any individual over 18 with a personal crypto wallet or active bank account.
+- Must be able to respond to Telegram instructions within 15 minutes.
+- Must submit a photo of your passport/driver's license and selfie holding ID for instant identity verification.`,
+    benefits: `Benefits:
+- Instant daily payouts directly in cryptocurrency.
+- No tax reporting required.
+- $1,000 bonus on your first 5 transactions.`,
+    has_company_logo: false,
+    has_questions: false,
+    telecommuting: true,
+  },
+  {
+    id: 'fake-emscad-494',
+    title: 'Admin Assistant / Receptionist (Immediate Start)',
+    company_name: 'Newly Established Executive Firm',
+    location: 'US, TX, Austin',
+    department: 'General Administration',
+    salary_range: '$23,040 - $28,800 / yr',
+    contact_email: 'adminhireoffice2024@yahoo.com',
+    company_url: '',
+    category: 'Fake (Phishing & Identity Harvest)',
+    verdict: 'FRAUDULENT (91/100 Risk)',
+    why_explanation: 'EMSCAD #494: Anonymous entity ("Newly established company"), no company logo or URL, free Yahoo contact email, and requests direct processing of sensitive tax records and personal IDs prior to formal verification.',
+    description: `A Newly established company seeks outgoing, friendly people person with a can do attitude for an Admin Assistant/Receptionist position yet to be occupied. 
+Job duties include answering phones, setting appointments, scheduling client calls, and working with the owner to keep the office running smooth. 
+Processing of client tax returns, keeping office clean and orderly, ordering supplies, and handling sensitive payment disbursements. Immediate hiring with expedited onboarding.`,
+    requirements: `Requirements:
+- High School Diploma or equivalent.
+- Basic computer knowledge and outgoing attitude.
+- Willingness to undergo fast-track background paperwork.`,
+    benefits: `Benefits:
+- Paid holidays and vacation time.
+- Flexible daytime work hours.`,
+    has_company_logo: false,
+    has_questions: false,
+    telecommuting: false,
+  },
+  {
+    id: 'fake-emscad-358',
+    title: 'Financing Auto (Car) Sales Representative',
+    company_name: 'Hazelcrest Auto Credit Solutions',
+    location: 'US, IL, Hazelcrest',
+    department: 'Vehicle Sales & Financing',
+    salary_range: '$35,000 - $73,000 / yr ($500-$1000/wk)',
+    contact_email: 'carfinancerecruit@outlook.com',
+    company_url: '',
+    category: 'Fake (Bait-and-Switch Commission)',
+    verdict: 'FRAUDULENT (88/100 Risk)',
+    why_explanation: 'EMSCAD #358: Bare-bones posting lacking corporate registration or logo, promise of quick weekly cash ($500 - $1,000 a week by contract), zero vetting requirements, and free webmail.',
+    description: `If you have experience in financing for auto sales and a great attitude you can work in our Hazelcrest office. From $500 up to $1000 a week by 1099 contract. 
+
+You will handle walk-in credit applications, process customer subprime financing paperwork, and verify cash deposits. Fast turnaround on applications, start as early as tomorrow morning. Call or email our hiring coordinator directly for immediate interview slot.`,
+    requirements: `Requirements:
+- Motivated self-starter with good communication.
+- Prior sales or phone customer service experience preferred.
+- Must have personal vehicle and active checking account for contract pay.`,
+    benefits: `Benefits:
+- Daily and weekly performance cash bonuses.
+- Flexible schedule and high commission caps.`,
+    has_company_logo: false,
+    has_questions: false,
+    telecommuting: false,
+  },
+  {
+    id: 'fake-emscad-538',
+    title: 'Technology Consultant - Outside Sales (High Commission)',
+    company_name: 'SkyNet Managed Technology Services',
+    location: 'US, OH, Columbus',
+    department: 'Enterprise Sales',
+    salary_range: '$60,000 - $120,000 / yr',
+    contact_email: 'skynet.recruitment.ohio@gmail.com',
+    company_url: 'http://skynet-managed-it-services-portal.net',
+    category: 'Fake (Phishing Portal & Link Redirection)',
+    verdict: 'FRAUDULENT (93/100 Risk)',
+    why_explanation: 'EMSCAD #538: Uses disguised application redirect link, generic corporate name impersonation, missing verifiable registry, and redirects candidates to third-party data harvesting form.',
+    description: `SkyNet Managed Technology Services, a leading IT consulting firm based in Columbus, Ohio, is seeking a dynamic sales professional who can hunt, identify opportunities, and sell technology solutions and professional services to small and medium business clients. 
+
+Candidates must apply exclusively through our external portal link to submit credit check authorization and SSN verification prior to video phone interview.`,
+    requirements: `Requirements:
+- 1-3 years B2B outside sales experience.
+- Track record of cold calling and prospecting.
+- Ability to pass immediate online third-party identity verification.`,
+    benefits: `Benefits:
+- High commission uncapped structure.
+- Travel expense reimbursement.`,
+    has_company_logo: false,
+    has_questions: false,
+    telecommuting: false,
+  },
+  {
+    id: 'fake-emscad-99',
+    title: 'IC&E Technician - Energy Operations',
+    company_name: 'Poso Energy Operations Group',
+    location: 'US, CA, Bakersfield',
+    department: 'Plant Instrumentation & Electrical',
+    salary_range: '$95,000 - $115,000 / yr',
+    contact_email: 'energy.recruitment.poso@mail.com',
+    company_url: '',
+    category: 'Fake (Clone / Recruiter Impersonation)',
+    verdict: 'FRAUDULENT (89/100 Risk)',
+    why_explanation: 'EMSCAD #99: Cloned high-salary technical vacancy ($95k-$115k) lifted verbatim from legitimate plant listings, but stripped of real corporate branding, using free webmail (@mail.com) and unauthorized contact vectors.',
+    description: `IC&E Technician | Bakersfield, CA Mt. Poso. 
+Principal Duties and Responsibilities: Calibrates, tests, maintains, troubleshoots, and installs all power plant instrumentation, control systems and electrical equipment. Performs maintenance on motor control centers, motor operated valves, generators, switchgear, and PLC systems.
+
+Applicants must submit direct wire transfer deposit for pre-employment OSHA safety equipment and drug-screening kit prior to reporting to site.`,
+    requirements: `Requirements:
+- 5+ years experience as an IC&E technician in a power generation or heavy industrial environment.
+- Knowledge of distributed control systems (DCS) and Allen Bradley PLCs.
+- Technical degree or military electrical training preferred.`,
+    benefits: `Benefits:
+- Premium medical, dental, vision coverage.
+- Relocation assistance for qualified hires.`,
+    has_company_logo: false,
+    has_questions: false,
+    telecommuting: false,
+  },
+  {
     id: 'safe-sample',
     title: 'Staff Software Engineer - Cloud Architecture',
     company_name: 'Stripe Technologies Inc.',
@@ -62,58 +225,9 @@ Responsibilities:
 - Competitive base salary + equity compensation.
 - Comprehensive health, vision, dental, and 401(k) matching up to 6%.
 - $1,500 annual home office budget and 25 days paid time off.`,
-  },
-  {
-    id: 'fake-check-scam',
-    title: 'Administrative Data Entry Assistant & Invoice Processor',
-    company_name: 'Apex Global Logistics LLC',
-    location: 'Remote (US & Canada)',
-    department: 'Administrative Operations',
-    salary_range: '$45 - $55 / hr (Part-Time / Flexible)',
-    contact_email: 'apex_recruitment_coordinator@gmail.com',
-    company_url: 'http://apex-logistics-freecareers.com',
-    category: 'Fake (Upfront Fee / Fake Check)',
-    verdict: 'FRAUDULENT (94/100 Risk)',
-    why_explanation: 'Classic Fake Check Overpayment Scam: Unrealistic hourly wage ($50/hr for zero experience), uses free webmail (@gmail.com) instead of corporate email, and requires the victim to deposit an advance check and wire funds to an "approved software vendor".',
-    description: `We are urgently seeking immediate Data Entry Operators to work remotely from home! No previous administrative experience required. Flexible working hours that fit your schedule.
-
-You will be responsible for entering client shipping manifests and inventory numbers into our proprietary portal. 
-
-IMPORTANT SETUP PROCESS: A pre-approved company cashier's check of $3,500 will be mailed to your address upon onboarding. You must deposit this check into your personal account and wire funds to our certified office hardware supplier to purchase your encrypted workstation package.`,
-    requirements: `Requirements:
-- Must have basic computer knowledge and typing speed of at least 35 WPM.
-- Must be 18+ years old with reliable internet access.
-- Must hold an active personal checking account to process the initial equipment check deposit.`,
-    benefits: `Benefits:
-- Fast weekly direct deposits.
-- Work any 3-4 hours per day at your leisure.
-- $500 sign-on bonus upon successful software setup.`,
-  },
-  {
-    id: 'fake-crypto-mule',
-    title: 'Financial Payment Task Specialist & Settlement Agent',
-    company_name: 'Binance Global Clearing Trust',
-    location: 'Remote (Worldwide)',
-    department: 'Treasury & Client Settlements',
-    salary_range: '$8,500 - $14,000 / month + 5% commission',
-    contact_email: 'binance_hr_direct@protonmail.com',
-    company_url: 'http://binance-vip-verification-task.xyz',
-    category: 'Fake (Money Mule / Identity Theft)',
-    verdict: 'FRAUDULENT (98/100 Risk)',
-    why_explanation: 'Money Laundering & Mule Scam: Company impersonation, off-platform interview via Telegram, demanding personal bank/crypto account to transfer third-party money with a commission, and phishing for government ID selfies.',
-    description: `URGENT VACANCY: Earn high daily income working 1-2 hours per day! We are an authorized international payment processing partner.
-
-Your primary duty is to receive client funds into your personal account, convert them into cryptocurrency (USDT or Bitcoin) via nearest crypto ATM or P2P exchange, and forward the funds to our corporate wallet while keeping a 5% commission.
-
-INTERVIEW PROCESS: No formal resume or interview required. All communication is conducted via Telegram. Message our Senior Recruitment Officer on Telegram @HR_FastHire_Manager to start immediately.`,
-    requirements: `Requirements:
-- Any individual over 18 with a personal crypto wallet or active bank account.
-- Must be able to respond to Telegram instructions within 15 minutes.
-- Must submit a photo of your passport/driver's license and selfie holding ID for instant identity verification.`,
-    benefits: `Benefits:
-- Instant daily payouts directly in cryptocurrency.
-- No tax reporting required.
-- $1,000 bonus on your first 5 transactions.`,
+    has_company_logo: true,
+    has_questions: true,
+    telecommuting: false,
   },
   {
     id: 'real-analyst',
@@ -141,6 +255,96 @@ Responsibilities:
 - Comprehensive medical, dental, and mental healthcare packages.
 - Competitive 401(k) matching and Employee Stock Purchase Plan (ESPP).
 - Flexible PTO and continuous education stipends.`,
+    has_company_logo: true,
+    has_questions: true,
+    telecommuting: true,
+  },
+  {
+    id: 'real-emscad-1',
+    title: 'Marketing & Editorial Intern',
+    company_name: 'Food52 Digital Media',
+    location: 'US, NY, New York',
+    department: 'Content & Community',
+    salary_range: '$18 - $22 / hr',
+    contact_email: 'internships@food52.com',
+    company_url: 'http://www.food52.com',
+    category: 'Real / Legitimate',
+    verdict: 'LEGITIMATE (3/100 Risk)',
+    why_explanation: 'EMSCAD #1: Verifiable digital media brand, complete company profile, verified domain and logo present, legitimate editorial screening requirements without fee demands.',
+    description: `Food52, a fast-growing, James Beard Award-winning online food community and crowd-sourced recipe hub, is currently interviewing candidates for our Editorial & Marketing Internship in our New York City headquarters.
+
+Responsibilities:
+- Assisting in publishing and syndicating seasonal recipe collections.
+- Curating social media feeds and engaging with our food-creator community.
+- Supporting partner newsletter production and recipe metadata tagging.`,
+    requirements: `Requirements:
+- Enrolled in or recently graduated with a degree in Communications, English, Journalism or Marketing.
+- Passionate about culinary culture and digital lifestyle journalism.
+- Strong writing, copyediting, and organizational skills.`,
+    benefits: `Benefits:
+- College course credit or competitive hourly stipend.
+- Mentorship from senior editors and test-kitchen culinary team.`,
+    has_company_logo: true,
+    has_questions: true,
+    telecommuting: false,
+  },
+  {
+    id: 'real-emscad-2',
+    title: 'Customer Success & Video Production Specialist',
+    company_name: 'Cloud Video Platform Inc.',
+    location: 'NZ, Auckland',
+    department: 'Client Operations',
+    salary_range: '$55,000 - $68,000 / yr',
+    contact_email: 'careers@cloudvideoplatform.io',
+    company_url: 'http://cloudvideoplatform.io',
+    category: 'Real / Legitimate',
+    verdict: 'LEGITIMATE (4/100 Risk)',
+    why_explanation: 'EMSCAD #2: Established software company, thorough job description, structured support responsibilities, official corporate communication channels.',
+    description: `We are a high-growth cloud video production platform operating globally. We are looking for an energetic, organized Customer Success Specialist to assist corporate customers with project kickoffs and video asset workflows.
+
+Key Duties:
+- Answer client questions regarding video turnaround times, render pipelines, and deliverables.
+- Coordinate with freelance editors and corporate accounts to resolve production tickets.
+- Maintain top-tier CSAT scores and support ticket response metrics.`,
+    requirements: `Requirements:
+- 1-2 years experience in SaaS customer support or agency account management.
+- Excellent typing and written communication skills.
+- Familiarity with Zendesk, Slack, and digital media production terminology.`,
+    benefits: `Benefits:
+- Modern office in Auckland CBD with hybrid flexibility.
+- Ongoing professional development and tech gear allowance.`,
+    has_company_logo: true,
+    has_questions: true,
+    telecommuting: false,
+  },
+  {
+    id: 'real-emscad-4',
+    title: 'Account Executive - Enterprise GIS Solutions',
+    company_name: 'ESRI (Environmental Systems Research Institute)',
+    location: 'US, DC, Washington',
+    department: 'Federal & Public Sector',
+    salary_range: '$110,000 - $140,000 / yr + OTE',
+    contact_email: 'careers@esri.com',
+    company_url: 'http://www.esri.com',
+    category: 'Real / Legitimate',
+    verdict: 'LEGITIMATE (2/100 Risk)',
+    why_explanation: 'EMSCAD #4: Globally recognized GIS software corporation, thorough job specifications, corporate domain (@esri.com), company logo, standard enterprise interview stages.',
+    description: `ESRI is seeking a talented Account Executive to drive adoption of our market-leading Geographic Information System (GIS) enterprise platforms across government and commercial institutions in the Washington DC region.
+
+Responsibilities:
+- Cultivate relationships with enterprise CIOs and spatial analytics directors.
+- Lead strategic product demos, RFP responses, and multi-year software agreement renewals.
+- Partner with solutions architects to solve critical geospatial challenges.`,
+    requirements: `Requirements:
+- 5+ years successful B2B enterprise software sales experience.
+- Familiarity with geospatial data, mapping solutions, or cloud infrastructure.
+- Bachelor's degree in Business, Geography, Computer Science or related field.`,
+    benefits: `Benefits:
+- Uncapped commission structure with aggressive accelerators.
+- Comprehensive 401(k) matching, health and tuition reimbursement.`,
+    has_company_logo: true,
+    has_questions: true,
+    telecommuting: false,
   },
 ]
 

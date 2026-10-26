@@ -47,12 +47,19 @@ export default function AnalyseJobPage() {
 
   const [activeTab, setActiveTab] = useState('form') // 'form' or 'raw'
   const [rawText, setRawText] = useState('')
+  const [presetFilter, setPresetFilter] = useState('all') // 'all', 'fake', 'real'
 
   const handlePresetClick = (presetId) => {
     loadPresetById(presetId)
     setActiveResult(null)
     toast.success('Loaded job preset. Click "Start AI Risk Scan" to inspect.')
   }
+
+  const filteredPresets = MOCK_JOB_PRESETS.filter((preset) => {
+    if (presetFilter === 'fake') return preset.id.startsWith('fake')
+    if (presetFilter === 'real') return !preset.id.startsWith('fake')
+    return true
+  })
 
   const handleRawTextParse = () => {
     if (!rawText.trim()) {
@@ -126,20 +133,50 @@ export default function AnalyseJobPage() {
 
       {/* Quick Demo Presets Bar with Dataset Ground-Truth Explanations */}
       <Card noPadding className="p-5 bg-slate-900/60 border-slate-800 shadow-xl space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
           <div className="flex items-center gap-2">
             <Zap className="w-4 h-4 text-amber-400" />
             <span className="text-xs font-bold text-white uppercase tracking-wider">
-              EMSCAD Benchmark Dataset Samples:
+              EMSCAD Benchmark Dataset Samples ({MOCK_JOB_PRESETS.length} postings):
             </span>
           </div>
-          <span className="text-[11px] text-slate-400 font-mono">
-            Click any sample to load & examine why it is Fake or Real
-          </span>
+
+          <div className="flex items-center gap-1.5 bg-slate-950/80 p-1 rounded-lg border border-slate-800 text-xs">
+            <button
+              onClick={() => setPresetFilter('all')}
+              className={`px-2.5 py-1 rounded-md font-medium transition-all ${
+                presetFilter === 'all'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              All ({MOCK_JOB_PRESETS.length})
+            </button>
+            <button
+              onClick={() => setPresetFilter('fake')}
+              className={`px-2.5 py-1 rounded-md font-medium transition-all ${
+                presetFilter === 'fake'
+                  ? 'bg-rose-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-rose-300'
+              }`}
+            >
+              Fraudulent ({MOCK_JOB_PRESETS.filter((p) => p.id.startsWith('fake')).length})
+            </button>
+            <button
+              onClick={() => setPresetFilter('real')}
+              className={`px-2.5 py-1 rounded-md font-medium transition-all ${
+                presetFilter === 'real'
+                  ? 'bg-emerald-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-emerald-300'
+              }`}
+            >
+              Legitimate ({MOCK_JOB_PRESETS.filter((p) => !p.id.startsWith('fake')).length})
+            </button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-          {MOCK_JOB_PRESETS.map((preset) => {
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 max-h-[460px] overflow-y-auto pr-1">
+          {filteredPresets.map((preset) => {
             const isFake = preset.id.startsWith('fake')
             return (
               <button

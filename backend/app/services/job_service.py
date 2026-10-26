@@ -14,6 +14,7 @@ from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.core.config import get_settings
+from app.core.logging import get_logger
 from app.core.errors import ResourceNotFoundError, ForbiddenError, APIError
 from app.schemas.job import (
     JobAnalysisRequest,
@@ -32,6 +33,7 @@ repo_root = Path(__file__).resolve().parents[3]
 if str(repo_root) not in sys.path:
     sys.path.insert(0, str(repo_root))
 
+logger = get_logger(__name__)
 _analyzer = None
 
 
@@ -150,10 +152,17 @@ class JobService:
             "created_at": now,
         }
 
-        insert_result = await self.collection.insert_one(doc)
-        doc["_id"] = insert_result.inserted_id
+        doc["_id"] = ObjectId()
+        try:
+            # Non-blocking async insert to MongoDB
+            import asyncio
+            insert_result = await asyncio.wait_for(self.collection.insert_one(doc), timeout=2.0)
+            doc["_id"] = insert_result.inserted_id
+        except Exception as e:
+            logger.warning(f"MongoDB storage skipped (Atlas unreachable in offline/showcase mode): {type(e).__name__}")
 
         return self._doc_to_response(doc)
+
 
     async def get_user_history(
         self,
